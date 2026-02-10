@@ -2,87 +2,109 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
-
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 220 15% 95%;
+    --foreground: 225 20% 12%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 220 10% 97%;
+    --card-foreground: 225 20% 12%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 220 10% 97%;
+    --popover-foreground: 225 20% 12%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 192 35% 42%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 220 12% 90%;
+    --secondary-foreground: 225 20% 12%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 220 12% 90%;
+    --muted-foreground: 225 10% 46%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 192 30% 88%;
+    --accent-foreground: 192 35% 30%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 55% 48%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 220 12% 86%;
+    --input: 220 12% 86%;
+    --ring: 192 35% 42%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
+
+    /* Sentinel custom tokens – light */
+    --sentinel-bg: 220 15% 95%;
+    --sentinel-surface: 220 10% 100%;
+    --sentinel-surface-alpha: 0 0% 100% / 0.7;
+    --sentinel-border-alpha: 220 15% 50% / 0.15;
+    --sentinel-glow: 192 35% 42% / 0.15;
+    --sentinel-text-primary: 225 20% 12%;
+    --sentinel-text-muted: 225 10% 46%;
+
+    --sentinel-severity-low: 215 20% 60%;
+    --sentinel-severity-medium: 38 65% 52%;
+    --sentinel-severity-high: 0 50% 50%;
+
+    --sentinel-accent-cyan: 192 35% 42%;
+    --sentinel-accent-violet: 250 30% 55%;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 220 18% 5%;
+    --foreground: 240 14% 93%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 220 15% 8%;
+    --card-foreground: 240 14% 93%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 220 15% 8%;
+    --popover-foreground: 240 14% 93%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 192 35% 52%;
+    --primary-foreground: 220 18% 5%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 220 15% 13%;
+    --secondary-foreground: 240 14% 93%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 220 15% 13%;
+    --muted-foreground: 240 10% 67%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 192 25% 15%;
+    --accent-foreground: 192 35% 70%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 45% 35%;
+    --destructive-foreground: 0 0% 95%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --border: 220 15% 15%;
+    --input: 220 15% 15%;
+    --ring: 192 35% 52%;
+
+    /* Sentinel custom tokens – dark */
+    --sentinel-bg: 220 18% 5%;
+    --sentinel-surface: 0 0% 100% / 0.06;
+    --sentinel-surface-alpha: 0 0% 100% / 0.06;
+    --sentinel-border-alpha: 0 0% 100% / 0.12;
+    --sentinel-glow: 192 35% 52% / 0.12;
+    --sentinel-text-primary: 240 14% 93%;
+    --sentinel-text-muted: 240 10% 67%;
+
+    --sentinel-severity-low: 215 20% 55%;
+    --sentinel-severity-medium: 38 60% 50%;
+    --sentinel-severity-high: 0 45% 48%;
+
+    --sentinel-accent-cyan: 192 35% 52%;
+    --sentinel-accent-violet: 250 30% 55%;
+
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -100,6 +122,83 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-body antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+}
+
+/* Sentinel glass utilities */
+@layer components {
+  .glass-surface {
+    @apply bg-sentinel-surface backdrop-blur-xl border border-sentinel-border rounded-xl;
+  }
+
+  .glass-surface-hover {
+    @apply glass-surface transition-all duration-500 ease-in-out;
+  }
+
+  .glass-surface-hover:hover {
+    background: hsl(var(--sentinel-surface-alpha));
+    border-color: hsl(var(--sentinel-glow));
+    box-shadow: 0 0 30px -10px hsl(var(--sentinel-glow));
+  }
+
+  .glass-pill {
+    @apply glass-surface rounded-2xl px-5 py-4;
+  }
+
+  .sentinel-glow {
+    box-shadow: 0 0 40px -15px hsl(var(--sentinel-glow));
+  }
+
+  .bg-noise {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+  }
+}
+
+/* Sentinel animations */
+@layer utilities {
+  .animate-sentinel-fade-in {
+    animation: sentinel-fade-in 0.8s ease-in-out both;
+  }
+
+  .animate-sentinel-slide-up {
+    animation: sentinel-slide-up 0.6s ease-in-out both;
+  }
+
+  .animate-sentinel-glow-pulse {
+    animation: sentinel-glow-pulse 4s ease-in-out infinite;
+  }
+}
+
+@keyframes sentinel-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes sentinel-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes sentinel-glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px -10px hsl(var(--sentinel-glow));
+  }
+  50% {
+    box-shadow: 0 0 40px -10px hsl(var(--sentinel-glow));
   }
 }
