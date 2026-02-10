@@ -1,7 +1,7 @@
 import { Shield, FileText, Home as HomeIcon, Car, Heart, CreditCard, Briefcase, Scale, Zap } from "lucide-react";
 
 export type Severity = "low" | "medium" | "high";
-export type Schedule = "one-time" | "monthly" | "yearly" | "custom";
+export type Schedule = "one-time" | "daily" | "monthly" | "quarterly" | "yearly" | "custom";
 export type RegretRisk = "Low" | "Medium" | "High";
 
 export interface Category {
@@ -24,6 +24,9 @@ export interface WatchedItem {
   status: "active" | "handled" | "snoozed";
   createdAt: Date;
   notes?: string;
+  customInterval?: { value: number; unit: "days" | "weeks" | "months" };
+  customDates?: string[];
+  reminders?: { enabled: boolean; days: number }[];
 }
 
 export const CATEGORY_ICONS: Record<string, any> = {
@@ -106,7 +109,7 @@ export const mockWatchedItems: WatchedItem[] = [
     category: defaultCategories[4],
     severity: "medium",
     nextDate: daysFromNow(25),
-    schedule: "monthly",
+    schedule: "quarterly",
     regretRisk: "Medium",
     actionWindow: "Best action window: 1–2 weeks before",
     status: "active",
