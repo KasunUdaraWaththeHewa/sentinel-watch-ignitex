@@ -1,18 +1,2 @@
-import { TopNav, BottomNav } from "@/components/sentinel/Navigation";
-import { FloatingActionButton } from "@/components/sentinel/FloatingActionButton";
-import { CommandCenter } from "@/components/sentinel/CommandCenter";
-
-const Index = () => {
-  return (
-    <div className="min-h-screen bg-background bg-noise">
-      <TopNav />
-      <main>
-        <CommandCenter />
-      </main>
-      <FloatingActionButton />
-      <BottomNav />
-    </div>
-  );
-};
-
-export default Index;
+import Landing from "./Landing";
+export default Landing;
