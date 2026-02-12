@@ -14,10 +14,9 @@ export function TopNav() {
 
   return (
     <header className="sticky top-0 z-50 w-full backdrop-blur-xl bg-background/60 border-b border-sentinel-border">
-      <div className="max-w-5xl mx-auto flex items-center justify-between h-14 px-4 sm:px-6">
-        {/* Logo */}
+      <div className="max-w-6xl mx-auto flex items-center justify-between h-14 sm:h-16 px-4 sm:px-6 lg:px-8">
         <Link to="/" className="flex items-center gap-2.5 group">
-          <div className="w-7 h-7 rounded-lg bg-sentinel-accent-cyan/15 flex items-center justify-center sentinel-glow">
+          <div className="w-8 h-8 rounded-lg bg-sentinel-accent-cyan/15 flex items-center justify-center sentinel-glow">
             <Eye className="h-4 w-4 text-sentinel-accent-cyan" />
           </div>
           <span className="font-display font-semibold text-base tracking-tight text-foreground">
@@ -25,17 +24,16 @@ export function TopNav() {
           </span>
         </Link>
 
-        {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-1">
           {navItems.map((item) => (
             <Link
               key={item.path}
               to={item.path}
               className={cn(
-                "px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-300",
+                "px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-300",
                 location.pathname === item.path
                   ? "text-foreground bg-sentinel-surface"
-                  : "text-muted-foreground hover:text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-sentinel-surface/50"
               )}
             >
               {item.label}
@@ -44,7 +42,7 @@ export function TopNav() {
           <Link
             to="/profile"
             className={cn(
-              "ml-2 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300",
+              "ml-2 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300",
               location.pathname === "/profile"
                 ? "bg-sentinel-accent-cyan/15 text-sentinel-accent-cyan"
                 : "text-muted-foreground hover:text-foreground hover:bg-sentinel-surface"
@@ -81,7 +79,7 @@ export function BottomNav() {
                 active ? "text-sentinel-accent-cyan" : "text-muted-foreground"
               )}
             >
-              <Icon className="h-5 w-5" />
+              <Icon className={cn("h-5 w-5", active && "drop-shadow-[0_0_6px_hsl(var(--sentinel-accent-cyan))]")} />
               <span className="text-[9px] sm:text-[10px] font-medium truncate">{item.shortLabel}</span>
             </Link>
           );

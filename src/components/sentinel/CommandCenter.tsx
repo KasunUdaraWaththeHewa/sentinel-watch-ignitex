@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { mockWatchedItems, defaultCategories, CATEGORY_ICONS, type Severity } from "@/lib/mock-data";
 import { WatchedItemCard } from "./WatchedItemCard";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Filter, X, ChevronDown, Archive, Eye, SlidersHorizontal } from "lucide-react";
+import { Search, X, Archive, Eye, SlidersHorizontal, TrendingUp, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 
@@ -51,10 +51,7 @@ export function CommandCenter() {
     return items;
   }, [statusTab, searchQuery, severityFilter, categoryFilter]);
 
-  const activeItems = filteredItems.filter((i) => {
-    if (statusTab !== "active") return false;
-    return true;
-  });
+  const activeItems = filteredItems.filter(() => statusTab === "active");
 
   const nextUp = activeItems.filter((i) => {
     const days = Math.ceil((i.nextDate.getTime() - now.getTime()) / 86400000);
@@ -73,7 +70,6 @@ export function CommandCenter() {
 
   const hasUrgent = nextUp.some((i) => i.severity === "high");
 
-  // Stats
   const allActive = mockWatchedItems.filter((i) => i.status === "active");
   const urgentCount = allActive.filter((i) => {
     const days = Math.ceil((i.nextDate.getTime() - now.getTime()) / 86400000);
@@ -89,7 +85,7 @@ export function CommandCenter() {
       : "All quiet — here's what Sentinel is watching next.";
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 pb-28 md:pb-12 space-y-6">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-28 md:pb-12 space-y-6">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -8 }}
@@ -110,87 +106,86 @@ export function CommandCenter() {
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="grid grid-cols-3 gap-3"
+        className="grid grid-cols-3 gap-3 sm:gap-4"
       >
-        <div className="glass-surface rounded-xl p-3 sm:p-4 text-center">
-          <p className="text-xl sm:text-2xl font-display font-bold text-foreground">{allActive.length}</p>
-          <p className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mt-0.5">Watching</p>
+        <div className="glass-surface rounded-2xl p-4 sm:p-5 text-center space-y-1">
+          <Eye className="h-4 w-4 text-sentinel-accent-cyan mx-auto" />
+          <p className="text-2xl sm:text-3xl font-display font-bold text-foreground">{allActive.length}</p>
+          <p className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider">Watching</p>
         </div>
-        <div className="glass-surface rounded-xl p-3 sm:p-4 text-center">
-          <p className={cn("text-xl sm:text-2xl font-display font-bold", urgentCount > 0 ? "text-sentinel-severity-high" : "text-foreground")}>{urgentCount}</p>
-          <p className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mt-0.5">Urgent</p>
+        <div className="glass-surface rounded-2xl p-4 sm:p-5 text-center space-y-1">
+          <AlertTriangle className={cn("h-4 w-4 mx-auto", urgentCount > 0 ? "text-sentinel-severity-high" : "text-muted-foreground")} />
+          <p className={cn("text-2xl sm:text-3xl font-display font-bold", urgentCount > 0 ? "text-sentinel-severity-high" : "text-foreground")}>{urgentCount}</p>
+          <p className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider">Urgent</p>
         </div>
-        <div className="glass-surface rounded-xl p-3 sm:p-4 text-center">
-          <p className="text-xl sm:text-2xl font-display font-bold text-foreground">{nextUp.length}</p>
-          <p className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mt-0.5">This Week</p>
+        <div className="glass-surface rounded-2xl p-4 sm:p-5 text-center space-y-1">
+          <TrendingUp className="h-4 w-4 text-sentinel-accent-cyan mx-auto" />
+          <p className="text-2xl sm:text-3xl font-display font-bold text-foreground">{nextUp.length}</p>
+          <p className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider">This Week</p>
         </div>
       </motion.div>
 
-      {/* Status Tabs */}
+      {/* Status Tabs + Search */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.15 }}
-        className="flex items-center gap-3"
-      >
-        <div className="glass-surface rounded-full p-1 flex gap-1 flex-1 sm:flex-initial">
-          <button
-            onClick={() => setStatusTab("active")}
-            className={cn(
-              "flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 flex-1 sm:flex-initial justify-center",
-              statusTab === "active"
-                ? "bg-sentinel-accent-cyan/15 text-foreground"
-                : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            <Eye className="h-3.5 w-3.5" />
-            Active
-          </button>
-          <button
-            onClick={() => setStatusTab("handled")}
-            className={cn(
-              "flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 flex-1 sm:flex-initial justify-center",
-              statusTab === "handled"
-                ? "bg-sentinel-accent-cyan/15 text-foreground"
-                : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            <Archive className="h-3.5 w-3.5" />
-            Past
-          </button>
-        </div>
-      </motion.div>
-
-      {/* Search & Filter Bar */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
         className="space-y-3"
       >
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          {/* Tabs */}
+          <div className="glass-surface rounded-xl p-1 flex gap-1 flex-shrink-0">
+            <button
+              onClick={() => setStatusTab("active")}
+              className={cn(
+                "flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 flex-1 sm:flex-initial justify-center",
+                statusTab === "active"
+                  ? "bg-sentinel-accent-cyan/15 text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <Eye className="h-3.5 w-3.5" />
+              Active
+            </button>
+            <button
+              onClick={() => setStatusTab("handled")}
+              className={cn(
+                "flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 flex-1 sm:flex-initial justify-center",
+                statusTab === "handled"
+                  ? "bg-sentinel-accent-cyan/15 text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <Archive className="h-3.5 w-3.5" />
+              Past
+            </button>
+          </div>
+
+          {/* Search */}
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <input
               type="text"
               placeholder="Search watched items..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-10 pl-10 pr-4 rounded-xl glass-surface border-sentinel-border bg-transparent text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:border-sentinel-accent-cyan/40 transition-colors duration-300"
+              className="w-full h-11 pl-10 pr-10 rounded-xl glass-surface border-sentinel-border bg-transparent text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:border-sentinel-accent-cyan/40 transition-colors duration-300"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
             )}
           </div>
+
+          {/* Filter toggle */}
           <button
             onClick={() => setShowFilters(!showFilters)}
             className={cn(
-              "h-10 px-3 rounded-xl glass-surface border-sentinel-border flex items-center gap-1.5 text-sm font-medium transition-all duration-300 flex-shrink-0",
+              "h-11 px-4 rounded-xl glass-surface border-sentinel-border flex items-center gap-2 text-sm font-medium transition-all duration-300 flex-shrink-0 justify-center",
               showFilters || activeFilters > 0
                 ? "text-sentinel-accent-cyan border-sentinel-accent-cyan/30"
                 : "text-muted-foreground hover:text-foreground"
@@ -216,67 +211,65 @@ export function CommandCenter() {
               transition={{ duration: 0.3 }}
               className="overflow-hidden"
             >
-              <div className="glass-surface rounded-xl p-4 space-y-4">
-                {/* Severity Filter */}
-                <div className="space-y-2">
-                  <label className="text-xs text-muted-foreground uppercase tracking-widest">Severity</label>
-                  <div className="flex flex-wrap gap-2">
-                    {(["all", "low", "medium", "high"] as const).map((s) => (
+              <div className="glass-surface rounded-xl p-4 sm:p-5 space-y-4">
+                <div className="grid sm:grid-cols-2 gap-4">
+                  {/* Severity */}
+                  <div className="space-y-2">
+                    <label className="text-xs text-muted-foreground uppercase tracking-widest">Severity</label>
+                    <div className="flex flex-wrap gap-2">
+                      {(["all", "low", "medium", "high"] as const).map((s) => (
+                        <button
+                          key={s}
+                          onClick={() => setSeverityFilter(s)}
+                          className={cn(
+                            "px-3 py-1.5 rounded-lg text-xs font-medium border transition-all duration-300",
+                            severityFilter === s
+                              ? "bg-sentinel-accent-cyan/15 border-sentinel-accent-cyan/30 text-foreground"
+                              : "border-sentinel-border text-muted-foreground hover:text-foreground"
+                          )}
+                        >
+                          {s === "all" ? "All" : s.charAt(0).toUpperCase() + s.slice(1)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Category */}
+                  <div className="space-y-2">
+                    <label className="text-xs text-muted-foreground uppercase tracking-widest">Category</label>
+                    <div className="flex flex-wrap gap-2">
                       <button
-                        key={s}
-                        onClick={() => setSeverityFilter(s)}
+                        onClick={() => setCategoryFilter("all")}
                         className={cn(
-                          "px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-300",
-                          severityFilter === s
+                          "px-3 py-1.5 rounded-lg text-xs font-medium border transition-all duration-300",
+                          categoryFilter === "all"
                             ? "bg-sentinel-accent-cyan/15 border-sentinel-accent-cyan/30 text-foreground"
                             : "border-sentinel-border text-muted-foreground hover:text-foreground"
                         )}
                       >
-                        {s === "all" ? "All" : s.charAt(0).toUpperCase() + s.slice(1)}
+                        All
                       </button>
-                    ))}
+                      {defaultCategories.map((cat) => (
+                        <button
+                          key={cat.id}
+                          onClick={() => setCategoryFilter(cat.id)}
+                          className={cn(
+                            "px-3 py-1.5 rounded-lg text-xs font-medium border transition-all duration-300",
+                            categoryFilter === cat.id
+                              ? "bg-sentinel-accent-cyan/15 border-sentinel-accent-cyan/30 text-foreground"
+                              : "border-sentinel-border text-muted-foreground hover:text-foreground"
+                          )}
+                        >
+                          {cat.name}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
-                {/* Category Filter */}
-                <div className="space-y-2">
-                  <label className="text-xs text-muted-foreground uppercase tracking-widest">Category</label>
-                  <div className="flex flex-wrap gap-2">
-                    <button
-                      onClick={() => setCategoryFilter("all")}
-                      className={cn(
-                        "px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-300",
-                        categoryFilter === "all"
-                          ? "bg-sentinel-accent-cyan/15 border-sentinel-accent-cyan/30 text-foreground"
-                          : "border-sentinel-border text-muted-foreground hover:text-foreground"
-                      )}
-                    >
-                      All
-                    </button>
-                    {defaultCategories.map((cat) => (
-                      <button
-                        key={cat.id}
-                        onClick={() => setCategoryFilter(cat.id)}
-                        className={cn(
-                          "px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-300",
-                          categoryFilter === cat.id
-                            ? "bg-sentinel-accent-cyan/15 border-sentinel-accent-cyan/30 text-foreground"
-                            : "border-sentinel-border text-muted-foreground hover:text-foreground"
-                        )}
-                      >
-                        {cat.name}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Clear */}
                 {activeFilters > 0 && (
                   <button
-                    onClick={() => {
-                      setSeverityFilter("all");
-                      setCategoryFilter("all");
-                    }}
+                    onClick={() => { setSeverityFilter("all"); setCategoryFilter("all"); }}
                     className="text-xs text-sentinel-accent-cyan hover:underline"
                   >
                     Clear all filters
@@ -303,18 +296,17 @@ export function CommandCenter() {
         </>
       )}
 
-      {/* Handled/Past Items */}
       {statusTab === "handled" && filteredItems.length > 0 && (
         <Section title="Completed" subtitle="Previously handled" items={filteredItems} startIndex={0} onItemClick={(id) => navigate(`/item/${id}`)} />
       )}
 
-      {/* Empty States */}
+      {/* Empty */}
       {filteredItems.length === 0 && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
-          className="glass-surface rounded-2xl p-12 text-center space-y-3"
+          className="glass-surface rounded-2xl p-12 sm:p-16 text-center space-y-4"
         >
           <div className="w-16 h-16 rounded-full bg-sentinel-accent-cyan/10 mx-auto flex items-center justify-center animate-sentinel-glow-pulse">
             <div className="w-3 h-3 rounded-full bg-sentinel-accent-cyan/60" />
@@ -364,7 +356,7 @@ function Section({
       <div className="flex items-baseline gap-3 px-1">
         <h2 className="font-display font-semibold text-base text-foreground">{title}</h2>
         <span className="text-xs text-muted-foreground">{subtitle}</span>
-        <span className="text-xs text-muted-foreground ml-auto">{items.length}</span>
+        <span className="text-xs text-muted-foreground ml-auto tabular-nums">{items.length}</span>
       </div>
       <div className="space-y-2">
         {items.map((item, i) => (
