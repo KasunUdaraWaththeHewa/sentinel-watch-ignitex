@@ -1,4 +1,4 @@
-import { type Severity } from "@/lib/mock-data";
+import { Severity } from "@/types/sentinel";
 import { cn } from "@/lib/utils";
 import { AlertTriangle, Shield, ShieldAlert } from "lucide-react";
 
@@ -8,17 +8,17 @@ interface SeverityBadgeProps {
 }
 
 const config: Record<Severity, { label: string; icon: typeof Shield; className: string }> = {
-  low: {
+  [Severity.Low]: {
     label: "Low",
     icon: Shield,
     className: "text-sentinel-severity-low border-sentinel-severity-low/30 bg-sentinel-severity-low/10",
   },
-  medium: {
+  [Severity.Medium]: {
     label: "Medium",
     icon: AlertTriangle,
     className: "text-sentinel-severity-medium border-sentinel-severity-medium/30 bg-sentinel-severity-medium/10",
   },
-  high: {
+  [Severity.High]: {
     label: "High",
     icon: ShieldAlert,
     className: "text-sentinel-severity-high border-sentinel-severity-high/30 bg-sentinel-severity-high/10",

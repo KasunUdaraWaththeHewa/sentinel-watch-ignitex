@@ -1,29 +1,14 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/sentinel/AppLayout";
-import { mockWatchedItems, CATEGORY_ICONS } from "@/lib/mock-data";
+import { mockWatchedItems } from "@/lib/mock-data";
+import { CATEGORY_ICONS, SCHEDULE_LABELS, SCHEDULE_INTERVAL_DAYS } from "@/lib/constants";
+import { getTimeRemaining, formatFullDate, getDaysUntil } from "@/lib/date-utils";
+import { Schedule, RegretRisk } from "@/types/sentinel";
 import { SeverityBadge } from "@/components/sentinel/SeverityBadge";
 import { motion } from "framer-motion";
 import { ArrowLeft, Clock, Calendar, Shield, Repeat, Bell, CheckCircle2, Pause, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-
-function getTimeRemaining(date: Date): string {
-  const now = new Date();
-  const diff = date.getTime() - now.getTime();
-  const days = Math.ceil(diff / 86400000);
-  if (days <= 0) return "Today";
-  if (days === 1) return "Tomorrow";
-  return `in ${days} days`;
-}
-
-function formatFullDate(date: Date): string {
-  return date.toLocaleDateString("en-US", { weekday: "short", month: "long", day: "numeric", year: "numeric" });
-}
-
-const scheduleLabels: Record<string, string> = {
-  "one-time": "One-time event", daily: "Repeats daily", monthly: "Repeats monthly",
-  quarterly: "Repeats quarterly", yearly: "Repeats yearly", custom: "Custom schedule",
-};
 
 const ItemDetail = () => {
   const { id } = useParams();
@@ -42,11 +27,11 @@ const ItemDetail = () => {
 
   const Icon = CATEGORY_ICONS[item.category.icon] || Clock;
   const timeRemaining = getTimeRemaining(item.nextDate);
-  const daysLeft = Math.ceil((item.nextDate.getTime() - new Date().getTime()) / 86400000);
+  const daysLeft = getDaysUntil(item.nextDate);
 
   const nextOccurrences: Date[] = [];
-  if (item.schedule !== "one-time") {
-    const intervalDays = item.schedule === "daily" ? 1 : item.schedule === "monthly" ? 30 : item.schedule === "quarterly" ? 90 : item.schedule === "yearly" ? 365 : 30;
+  if (item.schedule !== Schedule.OneTime) {
+    const intervalDays = SCHEDULE_INTERVAL_DAYS[item.schedule] || 30;
     for (let i = 0; i < 3; i++) {
       nextOccurrences.push(new Date(item.nextDate.getTime() + i * intervalDays * 86400000));
     }
@@ -62,11 +47,7 @@ const ItemDetail = () => {
 
   return (
     <AppLayout title={item.title} subtitle={item.category.name} showDate={false}>
-      {/* Back */}
-      <button
-        onClick={() => navigate("/dashboard")}
-        className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors duration-300"
-      >
+      <button onClick={() => navigate("/dashboard")} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors duration-300">
         <ArrowLeft className="h-4 w-4" /> Back to Command Center
       </button>
 
@@ -88,7 +69,7 @@ const ItemDetail = () => {
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           <InfoBlock icon={<Clock className="h-4 w-4 text-sentinel-accent-cyan" />} label="Time Left" value={timeRemaining} highlight={daysLeft <= 7} />
           <InfoBlock icon={<Calendar className="h-4 w-4 text-sentinel-accent-cyan" />} label="Due Date" value={formatFullDate(item.nextDate)} />
-          <InfoBlock icon={<Shield className="h-4 w-4 text-sentinel-accent-cyan" />} label="Regret Risk" value={item.regretRisk} highlight={item.regretRisk === "High"} />
+          <InfoBlock icon={<Shield className="h-4 w-4 text-sentinel-accent-cyan" />} label="Regret Risk" value={item.regretRisk} highlight={item.regretRisk === RegretRisk.High} />
         </div>
 
         <div className="glass-surface rounded-xl p-4">
@@ -101,13 +82,13 @@ const ItemDetail = () => {
         </div>
       </motion.div>
 
-      {/* Schedule Clarity */}
+      {/* Schedule */}
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }} className="glass-surface rounded-2xl p-6 space-y-4">
         <div className="flex items-center gap-2">
           <Repeat className="h-4 w-4 text-muted-foreground" />
           <h2 className="font-display font-semibold text-sm text-foreground uppercase tracking-widest">Schedule</h2>
         </div>
-        <p className="text-sm text-foreground">{scheduleLabels[item.schedule] || item.schedule}</p>
+        <p className="text-sm text-foreground">{SCHEDULE_LABELS[item.schedule] || item.schedule}</p>
         <div className="space-y-2">
           <p className="text-xs text-muted-foreground uppercase tracking-widest">Next Occurrences</p>
           {nextOccurrences.map((d, i) => (

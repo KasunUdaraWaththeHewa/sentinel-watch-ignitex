@@ -1,22 +1,13 @@
 import { useState, useMemo } from "react";
-import { mockWatchedItems, defaultCategories, CATEGORY_ICONS, type Severity } from "@/lib/mock-data";
+import { mockWatchedItems } from "@/lib/mock-data";
+import { DEFAULT_CATEGORIES, CATEGORY_ICONS, SENTINEL_EASE } from "@/lib/constants";
+import { formatDate, getDaysUntil } from "@/lib/date-utils";
+import { Severity, ItemStatus, type SeverityFilter, type StatusTab, type WatchedItem } from "@/types/sentinel";
 import { WatchedItemCard } from "./WatchedItemCard";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, X, Archive, Eye, SlidersHorizontal, TrendingUp, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
-
-function formatDate(date: Date): string {
-  return date.toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
-}
-
-type StatusTab = "active" | "handled";
-type SeverityFilter = Severity | "all";
 
 export function CommandCenter() {
   const navigate = useNavigate();
@@ -29,14 +20,14 @@ export function CommandCenter() {
   const [showFilters, setShowFilters] = useState(false);
 
   const filteredItems = useMemo(() => {
-    let items = mockWatchedItems.filter((i) => i.status === statusTab || (statusTab === "handled" && i.status === "snoozed"));
+    let items = mockWatchedItems.filter(
+      (i) => i.status === statusTab || (statusTab === "handled" && i.status === ItemStatus.Snoozed)
+    );
 
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       items = items.filter(
-        (i) =>
-          i.title.toLowerCase().includes(q) ||
-          i.category.name.toLowerCase().includes(q)
+        (i) => i.title.toLowerCase().includes(q) || i.category.name.toLowerCase().includes(q)
       );
     }
 
@@ -53,28 +44,19 @@ export function CommandCenter() {
 
   const activeItems = filteredItems.filter(() => statusTab === "active");
 
-  const nextUp = activeItems.filter((i) => {
-    const days = Math.ceil((i.nextDate.getTime() - now.getTime()) / 86400000);
-    return days <= 7;
-  });
-
+  const nextUp = activeItems.filter((i) => getDaysUntil(i.nextDate) <= 7);
   const upcoming = activeItems.filter((i) => {
-    const days = Math.ceil((i.nextDate.getTime() - now.getTime()) / 86400000);
+    const days = getDaysUntil(i.nextDate);
     return days > 7 && days <= 30;
   });
+  const onWatch = activeItems.filter((i) => getDaysUntil(i.nextDate) > 30);
 
-  const onWatch = activeItems.filter((i) => {
-    const days = Math.ceil((i.nextDate.getTime() - now.getTime()) / 86400000);
-    return days > 30;
-  });
+  const hasUrgent = nextUp.some((i) => i.severity === Severity.High);
 
-  const hasUrgent = nextUp.some((i) => i.severity === "high");
-
-  const allActive = mockWatchedItems.filter((i) => i.status === "active");
-  const urgentCount = allActive.filter((i) => {
-    const days = Math.ceil((i.nextDate.getTime() - now.getTime()) / 86400000);
-    return days <= 7 && i.severity === "high";
-  }).length;
+  const allActive = mockWatchedItems.filter((i) => i.status === ItemStatus.Active);
+  const urgentCount = allActive.filter(
+    (i) => getDaysUntil(i.nextDate) <= 7 && i.severity === Severity.High
+  ).length;
 
   const activeFilters = (severityFilter !== "all" ? 1 : 0) + (categoryFilter !== "all" ? 1 : 0);
 
@@ -90,7 +72,7 @@ export function CommandCenter() {
       <motion.div
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+        transition={{ duration: 0.6, ease: SENTINEL_EASE }}
         className="space-y-2"
       >
         <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
@@ -108,21 +90,14 @@ export function CommandCenter() {
         transition={{ duration: 0.5, delay: 0.1 }}
         className="grid grid-cols-3 gap-3 sm:gap-4"
       >
-        <div className="glass-surface rounded-2xl p-4 sm:p-5 text-center space-y-1">
-          <Eye className="h-4 w-4 text-sentinel-accent-cyan mx-auto" />
-          <p className="text-2xl sm:text-3xl font-display font-bold text-foreground">{allActive.length}</p>
-          <p className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider">Watching</p>
-        </div>
-        <div className="glass-surface rounded-2xl p-4 sm:p-5 text-center space-y-1">
-          <AlertTriangle className={cn("h-4 w-4 mx-auto", urgentCount > 0 ? "text-sentinel-severity-high" : "text-muted-foreground")} />
-          <p className={cn("text-2xl sm:text-3xl font-display font-bold", urgentCount > 0 ? "text-sentinel-severity-high" : "text-foreground")}>{urgentCount}</p>
-          <p className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider">Urgent</p>
-        </div>
-        <div className="glass-surface rounded-2xl p-4 sm:p-5 text-center space-y-1">
-          <TrendingUp className="h-4 w-4 text-sentinel-accent-cyan mx-auto" />
-          <p className="text-2xl sm:text-3xl font-display font-bold text-foreground">{nextUp.length}</p>
-          <p className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider">This Week</p>
-        </div>
+        <StatCard icon={Eye} value={allActive.length} label="Watching" />
+        <StatCard
+          icon={AlertTriangle}
+          value={urgentCount}
+          label="Urgent"
+          highlight={urgentCount > 0}
+        />
+        <StatCard icon={TrendingUp} value={nextUp.length} label="This Week" />
       </motion.div>
 
       {/* Status Tabs + Search */}
@@ -133,35 +108,11 @@ export function CommandCenter() {
         className="space-y-3"
       >
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-          {/* Tabs */}
           <div className="glass-surface rounded-xl p-1 flex gap-1 flex-shrink-0">
-            <button
-              onClick={() => setStatusTab("active")}
-              className={cn(
-                "flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 flex-1 sm:flex-initial justify-center",
-                statusTab === "active"
-                  ? "bg-sentinel-accent-cyan/15 text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              <Eye className="h-3.5 w-3.5" />
-              Active
-            </button>
-            <button
-              onClick={() => setStatusTab("handled")}
-              className={cn(
-                "flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 flex-1 sm:flex-initial justify-center",
-                statusTab === "handled"
-                  ? "bg-sentinel-accent-cyan/15 text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              <Archive className="h-3.5 w-3.5" />
-              Past
-            </button>
+            <TabButton active={statusTab === "active"} onClick={() => setStatusTab("active")} icon={Eye} label="Active" />
+            <TabButton active={statusTab === "handled"} onClick={() => setStatusTab("handled")} icon={Archive} label="Past" />
           </div>
 
-          {/* Search */}
           <div className="flex-1 relative">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <input
@@ -181,7 +132,6 @@ export function CommandCenter() {
             )}
           </div>
 
-          {/* Filter toggle */}
           <button
             onClick={() => setShowFilters(!showFilters)}
             className={cn(
@@ -213,55 +163,31 @@ export function CommandCenter() {
             >
               <div className="glass-surface rounded-xl p-4 sm:p-5 space-y-4">
                 <div className="grid sm:grid-cols-2 gap-4">
-                  {/* Severity */}
                   <div className="space-y-2">
                     <label className="text-xs text-muted-foreground uppercase tracking-widest">Severity</label>
                     <div className="flex flex-wrap gap-2">
-                      {(["all", "low", "medium", "high"] as const).map((s) => (
-                        <button
+                      {(["all", Severity.Low, Severity.Medium, Severity.High] as const).map((s) => (
+                        <FilterChip
                           key={s}
+                          active={severityFilter === s}
                           onClick={() => setSeverityFilter(s)}
-                          className={cn(
-                            "px-3 py-1.5 rounded-lg text-xs font-medium border transition-all duration-300",
-                            severityFilter === s
-                              ? "bg-sentinel-accent-cyan/15 border-sentinel-accent-cyan/30 text-foreground"
-                              : "border-sentinel-border text-muted-foreground hover:text-foreground"
-                          )}
-                        >
-                          {s === "all" ? "All" : s.charAt(0).toUpperCase() + s.slice(1)}
-                        </button>
+                          label={s === "all" ? "All" : s.charAt(0).toUpperCase() + s.slice(1)}
+                        />
                       ))}
                     </div>
                   </div>
 
-                  {/* Category */}
                   <div className="space-y-2">
                     <label className="text-xs text-muted-foreground uppercase tracking-widest">Category</label>
                     <div className="flex flex-wrap gap-2">
-                      <button
-                        onClick={() => setCategoryFilter("all")}
-                        className={cn(
-                          "px-3 py-1.5 rounded-lg text-xs font-medium border transition-all duration-300",
-                          categoryFilter === "all"
-                            ? "bg-sentinel-accent-cyan/15 border-sentinel-accent-cyan/30 text-foreground"
-                            : "border-sentinel-border text-muted-foreground hover:text-foreground"
-                        )}
-                      >
-                        All
-                      </button>
-                      {defaultCategories.map((cat) => (
-                        <button
+                      <FilterChip active={categoryFilter === "all"} onClick={() => setCategoryFilter("all")} label="All" />
+                      {DEFAULT_CATEGORIES.map((cat) => (
+                        <FilterChip
                           key={cat.id}
+                          active={categoryFilter === cat.id}
                           onClick={() => setCategoryFilter(cat.id)}
-                          className={cn(
-                            "px-3 py-1.5 rounded-lg text-xs font-medium border transition-all duration-300",
-                            categoryFilter === cat.id
-                              ? "bg-sentinel-accent-cyan/15 border-sentinel-accent-cyan/30 text-foreground"
-                              : "border-sentinel-border text-muted-foreground hover:text-foreground"
-                          )}
-                        >
-                          {cat.name}
-                        </button>
+                          label={cat.name}
+                        />
                       ))}
                     </div>
                   </div>
@@ -285,64 +211,86 @@ export function CommandCenter() {
       {statusTab === "active" && (
         <>
           {nextUp.length > 0 && (
-            <Section title="Next Up" subtitle="Within 7 days" items={nextUp} startIndex={0} onItemClick={(id) => navigate(`/item/${id}`)} />
+            <ItemSection title="Next Up" subtitle="Within 7 days" items={nextUp} startIndex={0} onItemClick={(id) => navigate(`/item/${id}`)} />
           )}
           {upcoming.length > 0 && (
-            <Section title="Upcoming" subtitle="Within 30 days" items={upcoming} startIndex={nextUp.length} onItemClick={(id) => navigate(`/item/${id}`)} />
+            <ItemSection title="Upcoming" subtitle="Within 30 days" items={upcoming} startIndex={nextUp.length} onItemClick={(id) => navigate(`/item/${id}`)} />
           )}
           {onWatch.length > 0 && (
-            <Section title="On Watch" subtitle="Later" items={onWatch} startIndex={nextUp.length + upcoming.length} onItemClick={(id) => navigate(`/item/${id}`)} />
+            <ItemSection title="On Watch" subtitle="Later" items={onWatch} startIndex={nextUp.length + upcoming.length} onItemClick={(id) => navigate(`/item/${id}`)} />
           )}
         </>
       )}
 
       {statusTab === "handled" && filteredItems.length > 0 && (
-        <Section title="Completed" subtitle="Previously handled" items={filteredItems} startIndex={0} onItemClick={(id) => navigate(`/item/${id}`)} />
+        <ItemSection title="Completed" subtitle="Previously handled" items={filteredItems} startIndex={0} onItemClick={(id) => navigate(`/item/${id}`)} />
       )}
 
-      {/* Empty */}
+      {/* Empty State */}
       {filteredItems.length === 0 && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
-          className="glass-surface rounded-2xl p-12 sm:p-16 text-center space-y-4"
-        >
-          <div className="w-16 h-16 rounded-full bg-sentinel-accent-cyan/10 mx-auto flex items-center justify-center animate-sentinel-glow-pulse">
-            <div className="w-3 h-3 rounded-full bg-sentinel-accent-cyan/60" />
-          </div>
-          {statusTab === "handled" ? (
-            <>
-              <p className="text-foreground font-display font-medium text-lg">No past items yet.</p>
-              <p className="text-muted-foreground text-sm">Items you mark as handled will appear here.</p>
-            </>
-          ) : searchQuery || activeFilters > 0 ? (
-            <>
-              <p className="text-foreground font-display font-medium text-lg">No matching items.</p>
-              <p className="text-muted-foreground text-sm">Try adjusting your search or filters.</p>
-            </>
-          ) : (
-            <>
-              <p className="text-foreground font-display font-medium text-lg">Nothing urgent.</p>
-              <p className="text-muted-foreground text-sm">Sentinel is standing by.</p>
-            </>
-          )}
-        </motion.div>
+        <EmptyState statusTab={statusTab} hasFilters={!!searchQuery || activeFilters > 0} />
       )}
     </div>
   );
 }
 
-function Section({
-  title,
-  subtitle,
-  items,
-  startIndex,
-  onItemClick,
-}: {
+// ---- Extracted Sub-Components ----
+
+function StatCard({ icon: Icon, value, label, highlight }: {
+  icon: React.ComponentType<{ className?: string }>;
+  value: number;
+  label: string;
+  highlight?: boolean;
+}) {
+  return (
+    <div className="glass-surface rounded-2xl p-4 sm:p-5 text-center space-y-1">
+      <Icon className={cn("h-4 w-4 mx-auto", highlight ? "text-sentinel-severity-high" : "text-sentinel-accent-cyan")} />
+      <p className={cn("text-2xl sm:text-3xl font-display font-bold", highlight ? "text-sentinel-severity-high" : "text-foreground")}>{value}</p>
+      <p className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider">{label}</p>
+    </div>
+  );
+}
+
+function TabButton({ active, onClick, icon: Icon, label }: {
+  active: boolean;
+  onClick: () => void;
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 flex-1 sm:flex-initial justify-center",
+        active ? "bg-sentinel-accent-cyan/15 text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+      )}
+    >
+      <Icon className="h-3.5 w-3.5" />
+      {label}
+    </button>
+  );
+}
+
+function FilterChip({ active, onClick, label }: { active: boolean; onClick: () => void; label: string }) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "px-3 py-1.5 rounded-lg text-xs font-medium border transition-all duration-300",
+        active
+          ? "bg-sentinel-accent-cyan/15 border-sentinel-accent-cyan/30 text-foreground"
+          : "border-sentinel-border text-muted-foreground hover:text-foreground"
+      )}
+    >
+      {label}
+    </button>
+  );
+}
+
+function ItemSection({ title, subtitle, items, startIndex, onItemClick }: {
   title: string;
   subtitle: string;
-  items: typeof mockWatchedItems;
+  items: WatchedItem[];
   startIndex: number;
   onItemClick?: (id: string) => void;
 }) {
@@ -369,5 +317,36 @@ function Section({
         ))}
       </div>
     </motion.section>
+  );
+}
+
+function EmptyState({ statusTab, hasFilters }: { statusTab: StatusTab; hasFilters: boolean }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.8 }}
+      className="glass-surface rounded-2xl p-12 sm:p-16 text-center space-y-4"
+    >
+      <div className="w-16 h-16 rounded-full bg-sentinel-accent-cyan/10 mx-auto flex items-center justify-center animate-sentinel-glow-pulse">
+        <div className="w-3 h-3 rounded-full bg-sentinel-accent-cyan/60" />
+      </div>
+      {statusTab === "handled" ? (
+        <>
+          <p className="text-foreground font-display font-medium text-lg">No past items yet.</p>
+          <p className="text-muted-foreground text-sm">Items you mark as handled will appear here.</p>
+        </>
+      ) : hasFilters ? (
+        <>
+          <p className="text-foreground font-display font-medium text-lg">No matching items.</p>
+          <p className="text-muted-foreground text-sm">Try adjusting your search or filters.</p>
+        </>
+      ) : (
+        <>
+          <p className="text-foreground font-display font-medium text-lg">Nothing urgent.</p>
+          <p className="text-muted-foreground text-sm">Sentinel is standing by.</p>
+        </>
+      )}
+    </motion.div>
   );
 }

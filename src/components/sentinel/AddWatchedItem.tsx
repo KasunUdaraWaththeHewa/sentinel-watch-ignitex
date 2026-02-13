@@ -4,71 +4,42 @@ import { ArrowLeft, ArrowRight, Check, Calendar, AlertTriangle, Eye, Plus, X, Tr
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { defaultCategories, CATEGORY_ICONS, type Severity, type Schedule } from "@/lib/mock-data";
+import { Severity, Schedule, CustomIntervalUnit, CustomScheduleMode, type Reminder } from "@/types/sentinel";
+import { DEFAULT_CATEGORIES, CATEGORY_ICONS, SCHEDULE_OPTIONS, SEVERITY_OPTIONS, SCHEDULE_FREQUENCY_LABELS, ADD_ITEM_STEPS, SENTINEL_EASE, getDefaultReminders } from "@/lib/constants";
 import { SeverityBadge } from "./SeverityBadge";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
-
-const scheduleOptions: { value: Schedule; label: string; desc: string }[] = [
-  { value: "one-time", label: "One-time", desc: "Just once" },
-  { value: "daily", label: "Daily", desc: "Every day" },
-  { value: "monthly", label: "Monthly", desc: "Every month" },
-  { value: "quarterly", label: "Quarterly", desc: "Every 3 months" },
-  { value: "yearly", label: "Yearly", desc: "Every year" },
-  { value: "custom", label: "Custom", desc: "Your interval" },
-];
-
-const severityOptions: { value: Severity; label: string }[] = [
-  { value: "low", label: "Low — easy to recover" },
-  { value: "medium", label: "Medium — inconvenient if missed" },
-  { value: "high", label: "High — costly or irreversible" },
-];
-
-const defaultReminders = (severity: Severity) => {
-  if (severity === "high") return [
-    { enabled: true, days: 30 },
-    { enabled: true, days: 7 },
-    { enabled: true, days: 1 },
-  ];
-  if (severity === "medium") return [
-    { enabled: true, days: 14 },
-    { enabled: true, days: 3 },
-  ];
-  return [{ enabled: true, days: 7 }];
-};
-
-const steps = ["What to watch", "When it matters", "What's the risk", "Reminders"];
 
 export function AddWatchedItem() {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [title, setTitle] = useState("");
   const [categoryId, setCategoryId] = useState("");
-  const [schedule, setSchedule] = useState<Schedule>("yearly");
+  const [schedule, setSchedule] = useState<Schedule>(Schedule.Yearly);
   const [date, setDate] = useState("");
-  const [severity, setSeverity] = useState<Severity>("medium");
+  const [severity, setSeverity] = useState<Severity>(Severity.Medium);
   const [done, setDone] = useState(false);
 
   // Custom schedule state
   const [customIntervalValue, setCustomIntervalValue] = useState(2);
-  const [customIntervalUnit, setCustomIntervalUnit] = useState<"days" | "weeks" | "months">("weeks");
-  const [customMode, setCustomMode] = useState<"interval" | "dates">("interval");
+  const [customIntervalUnit, setCustomIntervalUnit] = useState<CustomIntervalUnit>(CustomIntervalUnit.Weeks);
+  const [customMode, setCustomMode] = useState<CustomScheduleMode>(CustomScheduleMode.Interval);
   const [customDates, setCustomDates] = useState<string[]>([]);
   const [newCustomDate, setNewCustomDate] = useState("");
 
   // Reminders state
-  const [reminders, setReminders] = useState(defaultReminders("medium"));
+  const [reminders, setReminders] = useState<Reminder[]>(getDefaultReminders(Severity.Medium));
 
-  const selectedCategory = defaultCategories.find((c) => c.id === categoryId);
+  const selectedCategory = DEFAULT_CATEGORIES.find((c) => c.id === categoryId);
   const canAdvance =
     step === 0 ? title.trim() && categoryId :
-    step === 1 ? (schedule === "custom" ? (customMode === "interval" || customDates.length > 0) : !!date) :
+    step === 1 ? (schedule === Schedule.Custom ? (customMode === CustomScheduleMode.Interval || customDates.length > 0) : !!date) :
     true;
 
-  const getSchedulePreview = () => {
+  const getSchedulePreview = (): string => {
     if (!selectedCategory) return "";
-    if (schedule === "custom") {
-      if (customMode === "interval") {
+    if (schedule === Schedule.Custom) {
+      if (customMode === CustomScheduleMode.Interval) {
         return `Sentinel will watch this every ${customIntervalValue} ${customIntervalUnit}${date ? ` starting ${new Date(date).toLocaleDateString("en-US", { month: "long", day: "numeric" })}` : ""}.`;
       }
       if (customDates.length > 0) {
@@ -76,19 +47,13 @@ export function AddWatchedItem() {
       }
       return "";
     }
-    const freqMap: Record<string, string> = {
-      "one-time": "once",
-      daily: "every day",
-      monthly: "every month",
-      quarterly: "every quarter",
-      yearly: "every year",
-    };
-    return `Sentinel will watch this ${freqMap[schedule] || schedule}${date ? ` starting ${new Date(date).toLocaleDateString("en-US", { month: "long", day: "numeric" })}` : ""}.`;
+    const freqLabel = SCHEDULE_FREQUENCY_LABELS[schedule] || schedule;
+    return `Sentinel will watch this ${freqLabel}${date ? ` starting ${new Date(date).toLocaleDateString("en-US", { month: "long", day: "numeric" })}` : ""}.`;
   };
 
   const handleSeverityChange = (s: Severity) => {
     setSeverity(s);
-    setReminders(defaultReminders(s));
+    setReminders(getDefaultReminders(s));
   };
 
   const addCustomDate = () => {
@@ -124,7 +89,7 @@ export function AddWatchedItem() {
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+          transition={{ duration: 0.6, ease: SENTINEL_EASE }}
           className="w-20 h-20 rounded-full bg-sentinel-accent-cyan/15 flex items-center justify-center animate-sentinel-glow-pulse"
         >
           <Eye className="h-8 w-8 text-sentinel-accent-cyan" />
@@ -158,7 +123,7 @@ export function AddWatchedItem() {
       {/* Progress */}
       <div className="space-y-3">
         <div className="flex gap-2">
-          {steps.map((_, i) => (
+          {ADD_ITEM_STEPS.map((_, i) => (
             <div
               key={i}
               className={cn(
@@ -169,7 +134,7 @@ export function AddWatchedItem() {
           ))}
         </div>
         <p className="text-xs text-muted-foreground uppercase tracking-widest">
-          Step {step + 1} of {steps.length}
+          Step {step + 1} of {ADD_ITEM_STEPS.length}
         </p>
       </div>
 
@@ -179,19 +144,15 @@ export function AddWatchedItem() {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -20 }}
-          transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
+          transition={{ duration: 0.35, ease: SENTINEL_EASE }}
           className="space-y-6"
         >
           {/* Step 0: What to watch */}
           {step === 0 && (
             <>
               <div className="space-y-2">
-                <h2 className="font-display text-xl sm:text-2xl font-semibold text-foreground">
-                  What should Sentinel watch?
-                </h2>
-                <p className="text-sm text-muted-foreground">
-                  Give it a name and pick a category.
-                </p>
+                <h2 className="font-display text-xl sm:text-2xl font-semibold text-foreground">What should Sentinel watch?</h2>
+                <p className="text-sm text-muted-foreground">Give it a name and pick a category.</p>
               </div>
               <div className="space-y-4">
                 <Input
@@ -201,7 +162,7 @@ export function AddWatchedItem() {
                   className="glass-surface border-sentinel-border bg-transparent text-foreground placeholder:text-muted-foreground h-12 text-base"
                 />
                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                  {defaultCategories.map((cat) => {
+                  {DEFAULT_CATEGORIES.map((cat) => {
                     const Icon = CATEGORY_ICONS[cat.icon];
                     return (
                       <button
@@ -228,24 +189,18 @@ export function AddWatchedItem() {
           {step === 1 && (
             <>
               <div className="space-y-2">
-                <h2 className="font-display text-xl sm:text-2xl font-semibold text-foreground">
-                  When does it matter?
-                </h2>
-                <p className="text-sm text-muted-foreground">
-                  Set the schedule and next due date.
-                </p>
+                <h2 className="font-display text-xl sm:text-2xl font-semibold text-foreground">When does it matter?</h2>
+                <p className="text-sm text-muted-foreground">Set the schedule and next due date.</p>
               </div>
               <div className="space-y-4">
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                  {scheduleOptions.map((opt) => (
+                  {SCHEDULE_OPTIONS.map((opt) => (
                     <button
                       key={opt.value}
                       onClick={() => setSchedule(opt.value)}
                       className={cn(
                         "glass-surface rounded-xl p-3 text-left transition-all duration-300",
-                        schedule === opt.value
-                          ? "border-sentinel-accent-cyan/40 bg-sentinel-accent-cyan/10"
-                          : ""
+                        schedule === opt.value ? "border-sentinel-accent-cyan/40 bg-sentinel-accent-cyan/10" : ""
                       )}
                     >
                       <Calendar className="h-4 w-4 text-sentinel-accent-cyan mb-1" />
@@ -256,34 +211,30 @@ export function AddWatchedItem() {
                 </div>
 
                 {/* Custom schedule options */}
-                {schedule === "custom" && (
+                {schedule === Schedule.Custom && (
                   <div className="glass-surface rounded-xl p-4 space-y-4">
                     <div className="flex gap-2">
                       <button
-                        onClick={() => setCustomMode("interval")}
+                        onClick={() => setCustomMode(CustomScheduleMode.Interval)}
                         className={cn(
                           "flex-1 py-2 rounded-lg text-sm font-medium transition-all duration-300",
-                          customMode === "interval"
-                            ? "bg-sentinel-accent-cyan/15 text-foreground"
-                            : "text-muted-foreground"
+                          customMode === CustomScheduleMode.Interval ? "bg-sentinel-accent-cyan/15 text-foreground" : "text-muted-foreground"
                         )}
                       >
                         Repeat interval
                       </button>
                       <button
-                        onClick={() => setCustomMode("dates")}
+                        onClick={() => setCustomMode(CustomScheduleMode.Dates)}
                         className={cn(
                           "flex-1 py-2 rounded-lg text-sm font-medium transition-all duration-300",
-                          customMode === "dates"
-                            ? "bg-sentinel-accent-cyan/15 text-foreground"
-                            : "text-muted-foreground"
+                          customMode === CustomScheduleMode.Dates ? "bg-sentinel-accent-cyan/15 text-foreground" : "text-muted-foreground"
                         )}
                       >
                         Specific dates
                       </button>
                     </div>
 
-                    {customMode === "interval" && (
+                    {customMode === CustomScheduleMode.Interval && (
                       <div className="flex items-center gap-3">
                         <span className="text-sm text-muted-foreground">Every</span>
                         <Input
@@ -296,17 +247,17 @@ export function AddWatchedItem() {
                         />
                         <select
                           value={customIntervalUnit}
-                          onChange={(e) => setCustomIntervalUnit(e.target.value as "days" | "weeks" | "months")}
+                          onChange={(e) => setCustomIntervalUnit(e.target.value as CustomIntervalUnit)}
                           className="glass-surface border-sentinel-border bg-transparent text-foreground text-sm rounded-lg px-3 py-2 appearance-none"
                         >
-                          <option value="days" className="bg-background">days</option>
-                          <option value="weeks" className="bg-background">weeks</option>
-                          <option value="months" className="bg-background">months</option>
+                          <option value={CustomIntervalUnit.Days} className="bg-background">days</option>
+                          <option value={CustomIntervalUnit.Weeks} className="bg-background">weeks</option>
+                          <option value={CustomIntervalUnit.Months} className="bg-background">months</option>
                         </select>
                       </div>
                     )}
 
-                    {customMode === "dates" && (
+                    {customMode === CustomScheduleMode.Dates && (
                       <div className="space-y-3">
                         <div className="flex gap-2">
                           <Input
@@ -322,15 +273,8 @@ export function AddWatchedItem() {
                         {customDates.length > 0 && (
                           <div className="flex flex-wrap gap-2">
                             {customDates.map((d) => (
-                              <span
-                                key={d}
-                                className="inline-flex items-center gap-1.5 glass-surface rounded-full px-3 py-1 text-xs text-foreground"
-                              >
-                                {new Date(d + "T00:00").toLocaleDateString("en-US", {
-                                  month: "short",
-                                  day: "numeric",
-                                  year: "numeric",
-                                })}
+                              <span key={d} className="inline-flex items-center gap-1.5 glass-surface rounded-full px-3 py-1 text-xs text-foreground">
+                                {new Date(d + "T00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                                 <button onClick={() => removeCustomDate(d)} className="text-muted-foreground hover:text-destructive transition-colors">
                                   <X className="h-3 w-3" />
                                 </button>
@@ -339,36 +283,24 @@ export function AddWatchedItem() {
                           </div>
                         )}
                         {customDates.length === 0 && (
-                          <p className="text-xs text-muted-foreground text-center py-2">
-                            Add specific dates when this should be due.
-                          </p>
+                          <p className="text-xs text-muted-foreground text-center py-2">Add specific dates when this should be due.</p>
                         )}
                       </div>
                     )}
                   </div>
                 )}
 
-                {schedule !== "custom" && (
+                {schedule !== Schedule.Custom && (
                   <div className="space-y-2">
                     <label className="text-sm text-muted-foreground">Next due date</label>
-                    <Input
-                      type="date"
-                      value={date}
-                      onChange={(e) => setDate(e.target.value)}
-                      className="glass-surface border-sentinel-border bg-transparent text-foreground h-12"
-                    />
+                    <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="glass-surface border-sentinel-border bg-transparent text-foreground h-12" />
                   </div>
                 )}
 
-                {schedule === "custom" && customMode === "interval" && (
+                {schedule === Schedule.Custom && customMode === CustomScheduleMode.Interval && (
                   <div className="space-y-2">
                     <label className="text-sm text-muted-foreground">Starting from</label>
-                    <Input
-                      type="date"
-                      value={date}
-                      onChange={(e) => setDate(e.target.value)}
-                      className="glass-surface border-sentinel-border bg-transparent text-foreground h-12"
-                    />
+                    <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="glass-surface border-sentinel-border bg-transparent text-foreground h-12" />
                   </div>
                 )}
 
@@ -385,23 +317,17 @@ export function AddWatchedItem() {
           {step === 2 && (
             <>
               <div className="space-y-2">
-                <h2 className="font-display text-xl sm:text-2xl font-semibold text-foreground">
-                  What's the risk?
-                </h2>
-                <p className="text-sm text-muted-foreground">
-                  How bad is it if you forget this?
-                </p>
+                <h2 className="font-display text-xl sm:text-2xl font-semibold text-foreground">What's the risk?</h2>
+                <p className="text-sm text-muted-foreground">How bad is it if you forget this?</p>
               </div>
               <div className="space-y-3">
-                {severityOptions.map((opt) => (
+                {SEVERITY_OPTIONS.map((opt) => (
                   <button
                     key={opt.value}
                     onClick={() => handleSeverityChange(opt.value)}
                     className={cn(
                       "glass-surface w-full rounded-xl p-4 text-left flex items-center gap-4 transition-all duration-300",
-                      severity === opt.value
-                        ? "border-sentinel-accent-cyan/40 bg-sentinel-accent-cyan/10"
-                        : ""
+                      severity === opt.value ? "border-sentinel-accent-cyan/40 bg-sentinel-accent-cyan/10" : ""
                     )}
                   >
                     <SeverityBadge severity={opt.value} />
@@ -416,21 +342,14 @@ export function AddWatchedItem() {
           {step === 3 && (
             <>
               <div className="space-y-2">
-                <h2 className="font-display text-xl sm:text-2xl font-semibold text-foreground">
-                  Customize reminders
-                </h2>
-                <p className="text-sm text-muted-foreground">
-                  Adjust when Sentinel should nudge you, or remove reminders you don't need.
-                </p>
+                <h2 className="font-display text-xl sm:text-2xl font-semibold text-foreground">Customize reminders</h2>
+                <p className="text-sm text-muted-foreground">Adjust when Sentinel should nudge you, or remove reminders you don't need.</p>
               </div>
 
               <div className="space-y-3">
                 {reminders.map((reminder, i) => (
                   <div key={i} className="glass-surface rounded-xl p-4 flex items-center gap-3">
-                    <Switch
-                      checked={reminder.enabled}
-                      onCheckedChange={() => toggleReminder(i)}
-                    />
+                    <Switch checked={reminder.enabled} onCheckedChange={() => toggleReminder(i)} />
                     <div className="flex-1 flex items-center gap-2">
                       <Input
                         type="number"
@@ -441,14 +360,9 @@ export function AddWatchedItem() {
                         className="w-20 glass-surface border-sentinel-border bg-transparent text-foreground h-9 text-center text-sm"
                         disabled={!reminder.enabled}
                       />
-                      <span className={cn("text-sm", reminder.enabled ? "text-foreground" : "text-muted-foreground")}>
-                        days before
-                      </span>
+                      <span className={cn("text-sm", reminder.enabled ? "text-foreground" : "text-muted-foreground")}>days before</span>
                     </div>
-                    <button
-                      onClick={() => removeReminder(i)}
-                      className="text-muted-foreground hover:text-destructive transition-colors p-1"
-                    >
+                    <button onClick={() => removeReminder(i)} className="text-muted-foreground hover:text-destructive transition-colors p-1">
                       <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
@@ -465,9 +379,7 @@ export function AddWatchedItem() {
 
               {reminders.length === 0 && (
                 <div className="glass-surface rounded-xl p-4 text-center">
-                  <p className="text-sm text-muted-foreground">
-                    No reminders set. Sentinel will still track this item silently.
-                  </p>
+                  <p className="text-sm text-muted-foreground">No reminders set. Sentinel will still track this item silently.</p>
                 </div>
               )}
 
@@ -495,22 +407,13 @@ export function AddWatchedItem() {
 
       {/* Navigation */}
       <div className="flex justify-end pt-4">
-        {step < steps.length - 1 ? (
-          <Button
-            variant="glass-primary"
-            onClick={() => setStep(step + 1)}
-            disabled={!canAdvance}
-            className="gap-2"
-          >
+        {step < ADD_ITEM_STEPS.length - 1 ? (
+          <Button variant="glass-primary" onClick={() => setStep(step + 1)} disabled={!canAdvance} className="gap-2">
             Continue
             <ArrowRight className="h-4 w-4" />
           </Button>
         ) : (
-          <Button
-            variant="glass-primary"
-            onClick={() => setDone(true)}
-            className="gap-2"
-          >
+          <Button variant="glass-primary" onClick={() => setDone(true)} className="gap-2">
             <Check className="h-4 w-4" />
             Start Watching
           </Button>
