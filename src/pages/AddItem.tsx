@@ -1,15 +1,11 @@
-import { TopNav, BottomNav } from "@/components/sentinel/Navigation";
+import { AppLayout } from "@/components/sentinel/AppLayout";
 import { AddWatchedItem } from "@/components/sentinel/AddWatchedItem";
 
 const AddItem = () => {
   return (
-    <div className="min-h-screen bg-background bg-noise">
-      <TopNav />
-      <main>
-        <AddWatchedItem />
-      </main>
-      <BottomNav />
-    </div>
+    <AppLayout title="Add Watched Item" subtitle="Set up a new item for Sentinel to watch." showDate={false}>
+      <AddWatchedItem />
+    </AppLayout>
   );
 };
 
