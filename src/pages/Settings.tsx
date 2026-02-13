@@ -1,21 +1,11 @@
 import { useState } from "react";
 import { AppLayout } from "@/components/sentinel/AppLayout";
 import { motion } from "framer-motion";
-import { Moon, Sun, Monitor, Bell, Clock, Mail, Globe } from "lucide-react";
+import { Bell, Clock, Mail, Globe } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
-
-const themeOptions = [
-  { value: "dark", label: "Dark", icon: Moon, desc: "Deep graphite" },
-  { value: "light", label: "Light", icon: Sun, desc: "Warm off-white" },
-  { value: "system", label: "System", icon: Monitor, desc: "Match device" },
-];
-
-const timezones = [
-  "America/New_York", "America/Chicago", "America/Denver", "America/Los_Angeles",
-  "Europe/London", "Europe/Paris", "Asia/Tokyo", "Asia/Kolkata", "Australia/Sydney",
-];
+import { THEME_OPTIONS, TIMEZONES } from "@/lib/constants";
 
 const Settings = () => {
   const { theme, setTheme } = useTheme();
@@ -29,10 +19,9 @@ const Settings = () => {
 
   return (
     <AppLayout title="Settings" subtitle="Configure how Sentinel works for you.">
-      {/* Theme */}
-      <SettingsSection title="Appearance" icon={<Sun className="h-4 w-4" />} delay={0}>
+      <SettingsSection title="Appearance" icon={<Globe className="h-4 w-4" />} delay={0}>
         <div className="grid grid-cols-3 gap-2">
-          {themeOptions.map((opt) => {
+          {THEME_OPTIONS.map((opt) => {
             const Icon = opt.icon;
             return (
               <button
@@ -54,7 +43,6 @@ const Settings = () => {
         </div>
       </SettingsSection>
 
-      {/* Notifications */}
       <SettingsSection title="Notifications" icon={<Bell className="h-4 w-4" />} delay={0.05}>
         <div className="space-y-4">
           <SettingsRow label="Email reminders" desc="Get notified via email before deadlines" icon={<Mail className="h-4 w-4 text-sentinel-accent-cyan" />}>
@@ -69,10 +57,9 @@ const Settings = () => {
         </div>
       </SettingsSection>
 
-      {/* Quiet Hours */}
       <SettingsSection title="Quiet Hours" icon={<Clock className="h-4 w-4" />} delay={0.1}>
         <div className="space-y-4">
-          <SettingsRow label="Enable quiet hours" desc="No notifications during this window" icon={<Moon className="h-4 w-4 text-sentinel-accent-cyan" />}>
+          <SettingsRow label="Enable quiet hours" desc="No notifications during this window" icon={<Clock className="h-4 w-4 text-sentinel-accent-cyan" />}>
             <Switch checked={quietHoursEnabled} onCheckedChange={setQuietHoursEnabled} />
           </SettingsRow>
           {quietHoursEnabled && (
@@ -85,10 +72,9 @@ const Settings = () => {
         </div>
       </SettingsSection>
 
-      {/* Timezone */}
       <SettingsSection title="Timezone" icon={<Globe className="h-4 w-4" />} delay={0.15}>
         <select value={timezone} onChange={(e) => setTimezone(e.target.value)} className="w-full glass-surface border-sentinel-border bg-transparent text-foreground text-sm rounded-lg px-3 py-3 appearance-none cursor-pointer">
-          {timezones.map((tz) => (
+          {TIMEZONES.map((tz) => (
             <option key={tz} value={tz} className="bg-background text-foreground">
               {tz.replace(/_/g, " ")}
             </option>
