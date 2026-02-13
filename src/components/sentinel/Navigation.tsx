@@ -15,7 +15,7 @@ export function TopNav() {
   return (
     <header className="sticky top-0 z-50 w-full backdrop-blur-xl bg-background/60 border-b border-sentinel-border">
       <div className="max-w-6xl mx-auto flex items-center justify-between h-14 sm:h-16 px-4 sm:px-6 lg:px-8">
-        <Link to="/" className="flex items-center gap-2.5 group">
+        <Link to="/dashboard" className="flex items-center gap-2.5 group">
           <div className="w-8 h-8 rounded-lg bg-sentinel-accent-cyan/15 flex items-center justify-center sentinel-glow">
             <Eye className="h-4 w-4 text-sentinel-accent-cyan" />
           </div>

@@ -120,7 +120,7 @@ export function AddWatchedItem() {
 
   if (done) {
     return (
-      <div className="max-w-xl mx-auto px-4 sm:px-6 py-20 flex flex-col items-center text-center space-y-6">
+      <div className="py-20 flex flex-col items-center text-center space-y-6">
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
@@ -139,7 +139,7 @@ export function AddWatchedItem() {
           <p className="text-muted-foreground text-sm">{title}</p>
         </motion.div>
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}>
-          <Button variant="glass" onClick={() => navigate("/")} className="mt-4">
+          <Button variant="glass" onClick={() => navigate("/dashboard")} className="mt-4">
             Back to Command Center
           </Button>
         </motion.div>
@@ -148,9 +148,9 @@ export function AddWatchedItem() {
   }
 
   return (
-    <div className="max-w-xl mx-auto px-4 sm:px-6 py-8 pb-28 md:pb-12 space-y-8">
+    <div className="space-y-8">
       {/* Back button */}
-      <button onClick={() => (step > 0 ? setStep(step - 1) : navigate("/"))} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors duration-300">
+      <button onClick={() => (step > 0 ? setStep(step - 1) : navigate("/dashboard"))} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors duration-300">
         <ArrowLeft className="h-4 w-4" />
         {step > 0 ? "Back" : "Cancel"}
       </button>
