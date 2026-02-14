@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Search, X, SlidersHorizontal, Archive, Eye } from "lucide-react";
+import { Search, X, SlidersHorizontal, Archive, Eye, ArrowDownUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Severity, type SeverityFilter, type StatusTab } from "@/types/sentinel";
 import { DEFAULT_CATEGORIES } from "@/lib/constants";
+import type { SortOption } from "@/lib/item-utils";
 
 interface DashboardFiltersProps {
   statusTab: StatusTab;
@@ -14,13 +15,22 @@ interface DashboardFiltersProps {
   onSeverityFilterChange: (f: SeverityFilter) => void;
   categoryFilter: string;
   onCategoryFilterChange: (f: string) => void;
+  sortBy: SortOption;
+  onSortChange: (sort: SortOption) => void;
 }
+
+const SORT_OPTIONS: Array<{ value: SortOption; label: string }> = [
+  { value: "dueSoon", label: "Due soon" },
+  { value: "severity", label: "Severity" },
+  { value: "alphabetical", label: "A-Z" },
+];
 
 export function DashboardFilters({
   statusTab, onStatusTabChange,
   searchQuery, onSearchChange,
   severityFilter, onSeverityFilterChange,
   categoryFilter, onCategoryFilterChange,
+  sortBy, onSortChange,
 }: DashboardFiltersProps) {
   const [showFilters, setShowFilters] = useState(false);
   const activeFilters = (severityFilter !== "all" ? 1 : 0) + (categoryFilter !== "all" ? 1 : 0);
@@ -33,13 +43,11 @@ export function DashboardFilters({
       className="space-y-3"
     >
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
-        {/* Status Toggle */}
         <div className="glass-surface rounded-xl p-1 flex gap-1 flex-shrink-0">
           <TabButton active={statusTab === "active"} onClick={() => onStatusTabChange("active")} icon={Eye} label="Active" />
           <TabButton active={statusTab === "handled"} onClick={() => onStatusTabChange("handled")} icon={Archive} label="Past" />
         </div>
 
-        {/* Search */}
         <div className="flex-1 relative">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
           <input
@@ -56,7 +64,22 @@ export function DashboardFilters({
           )}
         </div>
 
-        {/* Filter Toggle */}
+        <div className="h-11 rounded-xl glass-surface border-sentinel-border px-3 text-sm text-muted-foreground flex items-center gap-2">
+          <ArrowDownUp className="h-4 w-4" />
+          <select
+            value={sortBy}
+            onChange={(event) => onSortChange(event.target.value as SortOption)}
+            className="bg-transparent outline-none text-foreground"
+            aria-label="Sort items"
+          >
+            {SORT_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value} className="bg-background text-foreground">
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <button
           onClick={() => setShowFilters(!showFilters)}
           className={cn(
@@ -76,7 +99,6 @@ export function DashboardFilters({
         </button>
       </div>
 
-      {/* Expandable Filter Panel */}
       <AnimatePresence>
         {showFilters && (
           <motion.div

@@ -16,6 +16,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ItemDetail from "./pages/ItemDetail";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
+import { WatchedItemsProvider } from "./context/WatchedItemsContext";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,7 @@ const App = () => (
   <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
+        <WatchedItemsProvider>
         <Toaster />
         <Sonner />
         <BrowserRouter>
@@ -42,6 +44,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
+        </WatchedItemsProvider>
       </TooltipProvider>
     </QueryClientProvider>
   </ThemeProvider>
