@@ -93,14 +93,25 @@ export function CommandCenter() {
       <DashboardStats watching={allActive.length} urgent={urgentCount} thisWeek={thisWeekCount} handled={allHandled.length} />
 
       {statusTab === "active" && highPriorityItems.length > 0 && (
-        <section className="glass-surface rounded-2xl p-4 sm:p-5 space-y-3">
+        <motion.section
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, ease: SENTINEL_EASE }}
+          className="glass-surface rounded-2xl p-4 sm:p-5 space-y-3"
+        >
           <div>
             <h2 className="text-sm font-semibold text-foreground">Priority queue</h2>
             <p className="text-xs text-muted-foreground">Fast actions for high-severity items.</p>
           </div>
-          <div className="grid gap-2">
-            {highPriorityItems.map((item) => (
-              <div key={item.id} className="rounded-xl border border-sentinel-border/70 bg-background/20 p-3 flex items-center justify-between gap-3">
+          <div className="grid gap-2.5">
+            {highPriorityItems.map((item, index) => (
+              <motion.div
+                key={item.id}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, delay: index * 0.06, ease: SENTINEL_EASE }}
+                className="rounded-xl bg-muted/30 p-3.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 transition-all duration-300 hover:bg-muted/45 hover:shadow-[0_12px_30px_-20px_hsl(var(--sentinel-glow))]"
+              >
                 <button
                   onClick={() => goToItem(item.id)}
                   className="text-left flex-1 min-w-0"
@@ -108,24 +119,24 @@ export function CommandCenter() {
                   <p className="text-sm text-foreground truncate">{item.title}</p>
                   <p className="text-xs text-muted-foreground">{quickActionLabel(item)}</p>
                 </button>
-                <div className="flex items-center gap-2">
+                <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto">
                   <button
                     onClick={() => markHandled(item.id)}
-                    className="text-xs px-2.5 py-1.5 rounded-md bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25 transition-colors"
+                    className="text-xs px-2.5 py-1.5 rounded-md bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25 transition-colors min-w-[92px]"
                   >
                     Mark done
                   </button>
                   <button
                     onClick={() => snoozeItem(item.id)}
-                    className="text-xs px-2.5 py-1.5 rounded-md bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-xs px-2.5 py-1.5 rounded-md bg-background/60 text-muted-foreground hover:text-foreground transition-colors min-w-[92px]"
                   >
                     Snooze
                   </button>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
-        </section>
+        </motion.section>
       )}
 
       <DashboardFilters
@@ -144,19 +155,19 @@ export function CommandCenter() {
       {statusTab === "active" && (
         <div className="space-y-6">
           {nextUp.length > 0 && (
-            <DashboardSection title="Next Up" subtitle="Within 7 days" items={nextUp} startIndex={0} onItemClick={goToItem} accent="high" onMarkHandled={markHandled} onSnooze={snoozeItem} />
+            <DashboardSection title="Next Up" subtitle="Within 7 days" items={nextUp} onItemClick={goToItem} accent="high" onMarkHandled={markHandled} onSnooze={snoozeItem} />
           )}
           {upcoming.length > 0 && (
-            <DashboardSection title="Upcoming" subtitle="Within 30 days" items={upcoming} startIndex={nextUp.length} onItemClick={goToItem} accent="medium" onMarkHandled={markHandled} onSnooze={snoozeItem} />
+            <DashboardSection title="Upcoming" subtitle="Within 30 days" items={upcoming} onItemClick={goToItem} accent="medium" onMarkHandled={markHandled} onSnooze={snoozeItem} />
           )}
           {onWatch.length > 0 && (
-            <DashboardSection title="On Watch" subtitle="30+ days away" items={onWatch} startIndex={nextUp.length + upcoming.length} onItemClick={goToItem} onMarkHandled={markHandled} onSnooze={snoozeItem} />
+            <DashboardSection title="On Watch" subtitle="30+ days away" items={onWatch} onItemClick={goToItem} onMarkHandled={markHandled} onSnooze={snoozeItem} />
           )}
         </div>
       )}
 
       {statusTab === "handled" && filteredItems.length > 0 && (
-        <DashboardSection title="Completed" subtitle="Previously handled" items={filteredItems} startIndex={0} onItemClick={goToItem} onReactivate={reactivateItem} />
+        <DashboardSection title="Completed" subtitle="Previously handled" items={filteredItems} onItemClick={goToItem} onReactivate={reactivateItem} />
       )}
 
       {filteredItems.length === 0 && <DashboardEmpty statusTab={statusTab} hasFilters={!!searchQuery || activeFilters > 0} />}

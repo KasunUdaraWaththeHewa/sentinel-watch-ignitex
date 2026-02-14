@@ -93,7 +93,7 @@ const Settings = () => {
             <SettingsRow label="Mobile-friendly summary card" desc="Prioritize compact cards for quick scans on mobile" icon={<Smartphone className="h-4 w-4 text-sentinel-accent-cyan" />}>
               <Switch checked={mobileSummary} onCheckedChange={setMobileSummary} />
             </SettingsRow>
-            <div className="grid gap-2 border-b border-sentinel-border/30 px-0 py-3 last:border-0 sm:grid-cols-[minmax(0,1fr)_180px] sm:items-center sm:gap-3">
+            <div className="grid gap-2 rounded-xl bg-muted/25 px-3 py-3 sm:grid-cols-[minmax(0,1fr)_180px] sm:items-center sm:gap-3">
               <div>
                 <p className="text-sm font-medium text-foreground">Reminder lead time</p>
                 <p className="text-xs text-muted-foreground">Trigger alerts before high-risk deadlines</p>
@@ -127,7 +127,7 @@ const Settings = () => {
             <SettingsRow label="Security digest" desc="Receive a monthly account and activity digest" icon={<ShieldCheck className="h-4 w-4 text-sentinel-accent-cyan" />}>
               <Switch checked={securityDigest} onCheckedChange={setSecurityDigest} />
             </SettingsRow>
-            <div className="grid gap-2 px-0 py-3 sm:grid-cols-[minmax(0,1fr)_220px] sm:items-center sm:gap-3">
+            <div className="grid gap-2 rounded-xl bg-muted/25 px-3 py-3 sm:grid-cols-[minmax(0,1fr)_220px] sm:items-center sm:gap-3">
               <div>
                 <p className="text-sm font-medium text-foreground">Default risk visibility</p>
                 <p className="text-xs text-muted-foreground">Choose who can view risk scores in your workspace</p>
@@ -163,7 +163,7 @@ function SettingsSection({ title, icon, delay, children }: { title: string; icon
 
 function SettingsRow({ label, desc, icon, children }: { label: string; desc: string; icon: React.ReactNode; children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-3 py-3 border-b border-sentinel-border/30 last:border-0 sm:flex-row sm:items-center">
+    <div className="flex flex-col gap-3 py-3 px-3 rounded-xl bg-muted/20 sm:flex-row sm:items-center transition-colors duration-300 hover:bg-muted/30">
       <div className="flex-shrink-0">{icon}</div>
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-foreground">{label}</p>
