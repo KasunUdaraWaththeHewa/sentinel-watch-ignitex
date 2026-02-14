@@ -12,7 +12,6 @@ export default defineConfig(({ mode }) => ({
       overlay: false,
     },
   },
-  base: "/IgniteX-SL/sentinel-watch-ignitex",
   plugins: [react(), mode === "development" && componentTagger()].filter(
     Boolean,
   ),
