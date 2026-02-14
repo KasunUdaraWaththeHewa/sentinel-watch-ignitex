@@ -4,51 +4,50 @@
 
 @layer base {
   :root {
-    --background: 220 15% 95%;
-    --foreground: 225 20% 12%;
+    --background: 224 100% 98%;
+    --foreground: 230 32% 16%;
 
-    --card: 220 10% 97%;
-    --card-foreground: 225 20% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 230 32% 16%;
 
-    --popover: 220 10% 97%;
-    --popover-foreground: 225 20% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 230 32% 16%;
 
-    --primary: 192 35% 42%;
+    --primary: 257 83% 62%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 12% 90%;
-    --secondary-foreground: 225 20% 12%;
+    --secondary: 230 35% 94%;
+    --secondary-foreground: 230 32% 16%;
 
-    --muted: 220 12% 90%;
-    --muted-foreground: 225 10% 46%;
+    --muted: 230 35% 94%;
+    --muted-foreground: 230 16% 43%;
 
-    --accent: 192 30% 88%;
-    --accent-foreground: 192 35% 30%;
+    --accent: 204 100% 95%;
+    --accent-foreground: 228 45% 28%;
 
-    --destructive: 0 55% 48%;
+    --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 12% 86%;
-    --input: 220 12% 86%;
-    --ring: 192 35% 42%;
+    --border: 228 33% 88%;
+    --input: 228 33% 88%;
+    --ring: 257 83% 62%;
 
-    --radius: 0.75rem;
+    --radius: 0.9rem;
 
-    /* Sentinel custom tokens – light */
-    --sentinel-bg: 220 15% 95%;
-    --sentinel-surface: 220 10% 100%;
-    --sentinel-surface-alpha: 0 0% 100% / 0.7;
-    --sentinel-border-alpha: 220 15% 50% / 0.15;
-    --sentinel-glow: 192 35% 42% / 0.15;
-    --sentinel-text-primary: 225 20% 12%;
-    --sentinel-text-muted: 225 10% 46%;
+    --sentinel-bg: 224 100% 98%;
+    --sentinel-surface: 0 0% 100% / 0.72;
+    --sentinel-surface-alpha: 0 0% 100% / 0.72;
+    --sentinel-border-alpha: 229 40% 67% / 0.26;
+    --sentinel-glow: 257 83% 62% / 0.28;
+    --sentinel-text-primary: 230 32% 16%;
+    --sentinel-text-muted: 230 16% 43%;
 
-    --sentinel-severity-low: 215 20% 60%;
-    --sentinel-severity-medium: 38 65% 52%;
-    --sentinel-severity-high: 0 50% 50%;
+    --sentinel-severity-low: 204 86% 44%;
+    --sentinel-severity-medium: 35 92% 50%;
+    --sentinel-severity-high: 354 78% 56%;
 
-    --sentinel-accent-cyan: 192 35% 42%;
-    --sentinel-accent-violet: 250 30% 55%;
+    --sentinel-accent-cyan: 194 90% 45%;
+    --sentinel-accent-violet: 257 83% 62%;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -61,49 +60,48 @@
   }
 
   .dark {
-    --background: 220 18% 5%;
-    --foreground: 240 14% 93%;
+    --background: 232 46% 7%;
+    --foreground: 220 22% 92%;
 
-    --card: 220 15% 8%;
-    --card-foreground: 240 14% 93%;
+    --card: 232 38% 11%;
+    --card-foreground: 220 22% 92%;
 
-    --popover: 220 15% 8%;
-    --popover-foreground: 240 14% 93%;
+    --popover: 232 38% 11%;
+    --popover-foreground: 220 22% 92%;
 
-    --primary: 192 35% 52%;
-    --primary-foreground: 220 18% 5%;
+    --primary: 262 88% 74%;
+    --primary-foreground: 232 46% 7%;
 
-    --secondary: 220 15% 13%;
-    --secondary-foreground: 240 14% 93%;
+    --secondary: 231 30% 16%;
+    --secondary-foreground: 220 22% 92%;
 
-    --muted: 220 15% 13%;
-    --muted-foreground: 240 10% 67%;
+    --muted: 231 30% 16%;
+    --muted-foreground: 222 14% 68%;
 
-    --accent: 192 25% 15%;
-    --accent-foreground: 192 35% 70%;
+    --accent: 232 32% 15%;
+    --accent-foreground: 220 22% 92%;
 
-    --destructive: 0 45% 35%;
-    --destructive-foreground: 0 0% 95%;
+    --destructive: 0 62% 43%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 220 15% 15%;
-    --input: 220 15% 15%;
-    --ring: 192 35% 52%;
+    --border: 231 28% 20%;
+    --input: 231 28% 20%;
+    --ring: 262 88% 74%;
 
-    /* Sentinel custom tokens – dark */
-    --sentinel-bg: 220 18% 5%;
-    --sentinel-surface: 0 0% 100% / 0.06;
-    --sentinel-surface-alpha: 0 0% 100% / 0.06;
-    --sentinel-border-alpha: 0 0% 100% / 0.12;
-    --sentinel-glow: 192 35% 52% / 0.12;
-    --sentinel-text-primary: 240 14% 93%;
-    --sentinel-text-muted: 240 10% 67%;
+    --sentinel-bg: 232 46% 7%;
+    --sentinel-surface: 238 52% 100% / 0.08;
+    --sentinel-surface-alpha: 238 52% 100% / 0.08;
+    --sentinel-border-alpha: 220 35% 100% / 0.16;
+    --sentinel-glow: 262 88% 74% / 0.26;
+    --sentinel-text-primary: 220 22% 92%;
+    --sentinel-text-muted: 222 14% 68%;
 
-    --sentinel-severity-low: 215 20% 55%;
-    --sentinel-severity-medium: 38 60% 50%;
-    --sentinel-severity-high: 0 45% 48%;
+    --sentinel-severity-low: 199 90% 61%;
+    --sentinel-severity-medium: 38 86% 58%;
+    --sentinel-severity-high: 353 84% 66%;
 
-    --sentinel-accent-cyan: 192 35% 52%;
-    --sentinel-accent-violet: 250 30% 55%;
+    --sentinel-accent-cyan: 191 100% 62%;
+    --sentinel-accent-violet: 262 88% 74%;
 
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
@@ -121,29 +119,44 @@
     @apply border-border;
   }
 
-  body {
-    @apply bg-background text-foreground font-body antialiased;
+  html,
+  body,
+  #root {
+    @apply min-h-screen;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+    background-image:
+      radial-gradient(circle at 12% -5%, hsl(var(--sentinel-accent-violet) / 0.2) 0, transparent 35%),
+      radial-gradient(circle at 88% -12%, hsl(var(--sentinel-accent-cyan) / 0.17) 0, transparent 38%),
+      radial-gradient(circle at 50% 120%, hsl(var(--sentinel-accent-violet) / 0.1) 0, transparent 45%);
+    background-attachment: fixed;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-display;
   }
 }
 
-/* Sentinel glass utilities */
 @layer components {
   .glass-surface {
-    @apply bg-sentinel-surface backdrop-blur-xl border border-sentinel-border rounded-xl;
+    @apply border border-sentinel-border bg-sentinel-surface backdrop-blur-2xl shadow-[0_18px_45px_-25px_hsl(var(--sentinel-glow))];
   }
 
   .glass-surface-hover {
-    @apply glass-surface transition-all duration-500 ease-in-out;
+    @apply glass-surface transition-all duration-500 ease-out;
   }
 
   .glass-surface-hover:hover {
     background: hsl(var(--sentinel-surface-alpha));
     border-color: hsl(var(--sentinel-glow));
-    box-shadow: 0 0 30px -10px hsl(var(--sentinel-glow));
+    box-shadow: 0 0 0 1px hsl(var(--sentinel-glow) / 0.14), 0 0 35px -12px hsl(var(--sentinel-glow));
   }
 
   .glass-pill {
@@ -151,11 +164,15 @@
   }
 
   .sentinel-glow {
-    box-shadow: 0 0 40px -15px hsl(var(--sentinel-glow));
+    box-shadow: 0 0 0 1px hsl(var(--sentinel-glow) / 0.15), 0 0 30px -12px hsl(var(--sentinel-glow));
   }
 
   .bg-noise {
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+    background-image:
+      radial-gradient(circle at 15% 10%, hsl(var(--sentinel-accent-violet) / 0.12), transparent 33%),
+      radial-gradient(circle at 85% 20%, hsl(var(--sentinel-accent-cyan) / 0.1), transparent 35%),
+      radial-gradient(circle at 50% 100%, hsl(var(--sentinel-accent-violet) / 0.09), transparent 45%),
+      url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.035'/%3E%3C/svg%3E");
   }
 
   .safe-area-bottom {
@@ -163,7 +180,6 @@
   }
 }
 
-/* Sentinel animations */
 @layer utilities {
   .animate-sentinel-fade-in {
     animation: sentinel-fade-in 0.8s ease-in-out both;
@@ -199,7 +215,8 @@
 }
 
 @keyframes sentinel-glow-pulse {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 20px -10px hsl(var(--sentinel-glow));
   }
   50% {

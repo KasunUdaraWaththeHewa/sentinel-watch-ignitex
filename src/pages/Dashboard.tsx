@@ -6,7 +6,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-background bg-noise">
       <TopNav />
-      <main>
+      <main className="pt-2">
         <CommandCenter />
       </main>
       <FloatingActionButton />
