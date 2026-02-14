@@ -1,7 +1,7 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useDeferredValue } from "react";
 import { SENTINEL_EASE } from "@/lib/constants";
 import { formatDate, getDaysUntil } from "@/lib/date-utils";
-import { Severity, ItemStatus, type SeverityFilter, type StatusTab } from "@/types/sentinel";
+import { Severity, ItemStatus, type SeverityFilter, type StatusTab, type WatchedItem } from "@/types/sentinel";
 import { DashboardStats } from "./DashboardStats";
 import { DashboardFilters } from "./DashboardFilters";
 import { DashboardSection } from "./DashboardSection";
@@ -25,6 +25,8 @@ export function CommandCenter() {
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [sortBy, setSortBy] = useState<SortOption>("dueSoon");
 
+  const deferredSearchQuery = useDeferredValue(searchQuery);
+
   const allActive = items.filter((item) => item.status === ItemStatus.Active);
   const allHandled = items.filter((item) => item.status === ItemStatus.Handled || item.status === ItemStatus.Snoozed);
   const urgentCount = allActive.filter((item) => getDaysUntil(item.nextDate) <= 7 && item.severity === Severity.High).length;
@@ -33,13 +35,13 @@ export function CommandCenter() {
   const filteredItems = useMemo(() => {
     const visible = filterItems(items, {
       statusTab,
-      searchQuery,
+      searchQuery: deferredSearchQuery,
       severityFilter,
       categoryFilter,
     });
 
     return sortItems(visible, sortBy);
-  }, [items, statusTab, searchQuery, severityFilter, categoryFilter, sortBy]);
+  }, [items, statusTab, deferredSearchQuery, severityFilter, categoryFilter, sortBy]);
 
   const activeItems = filteredItems.filter(() => statusTab === "active");
   const nextUp = activeItems.filter((item) => getDaysUntil(item.nextDate) <= 7);
@@ -48,6 +50,15 @@ export function CommandCenter() {
     return daysUntil > 7 && daysUntil <= 30;
   });
   const onWatch = activeItems.filter((item) => getDaysUntil(item.nextDate) > 30);
+
+  const highPriorityItems = useMemo(
+    () =>
+      allActive
+        .filter((item) => item.severity === Severity.High)
+        .sort((a, b) => a.nextDate.getTime() - b.nextDate.getTime())
+        .slice(0, 3),
+    [allActive]
+  );
 
   const hasUrgent = nextUp.some((item) => item.severity === Severity.High);
   const activeFilters = (severityFilter !== "all" ? 1 : 0) + (categoryFilter !== "all" ? 1 : 0);
@@ -60,6 +71,11 @@ export function CommandCenter() {
         : "Everything looks good — Sentinel is watching.";
 
   const goToItem = (id: string) => navigate(`/item/${id}`);
+
+  const quickActionLabel = (item: WatchedItem) => {
+    const daysUntil = getDaysUntil(item.nextDate);
+    return daysUntil <= 0 ? "Due today" : `Due in ${daysUntil}d`;
+  };
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-28 md:pb-12 space-y-6">
@@ -75,6 +91,42 @@ export function CommandCenter() {
       </motion.div>
 
       <DashboardStats watching={allActive.length} urgent={urgentCount} thisWeek={thisWeekCount} handled={allHandled.length} />
+
+      {statusTab === "active" && highPriorityItems.length > 0 && (
+        <section className="glass-surface rounded-2xl p-4 sm:p-5 space-y-3">
+          <div>
+            <h2 className="text-sm font-semibold text-foreground">Priority queue</h2>
+            <p className="text-xs text-muted-foreground">Fast actions for high-severity items.</p>
+          </div>
+          <div className="grid gap-2">
+            {highPriorityItems.map((item) => (
+              <div key={item.id} className="rounded-xl border border-sentinel-border/70 bg-background/20 p-3 flex items-center justify-between gap-3">
+                <button
+                  onClick={() => goToItem(item.id)}
+                  className="text-left flex-1 min-w-0"
+                >
+                  <p className="text-sm text-foreground truncate">{item.title}</p>
+                  <p className="text-xs text-muted-foreground">{quickActionLabel(item)}</p>
+                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => markHandled(item.id)}
+                    className="text-xs px-2.5 py-1.5 rounded-md bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25 transition-colors"
+                  >
+                    Mark done
+                  </button>
+                  <button
+                    onClick={() => snoozeItem(item.id)}
+                    className="text-xs px-2.5 py-1.5 rounded-md bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Snooze
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       <DashboardFilters
         statusTab={statusTab}
