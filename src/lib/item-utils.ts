@@ -1,5 +1,10 @@
 import { getDaysUntil } from "@/lib/date-utils";
-import { ItemStatus, Severity, type SeverityFilter, type WatchedItem } from "@/types/sentinel";
+import {
+  ItemStatus,
+  Severity,
+  type SeverityFilter,
+  type WatchedItem,
+} from "@/types/sentinel";
 
 export type SortOption = "dueSoon" | "severity" | "alphabetical" | "newest";
 
@@ -9,22 +14,29 @@ const severityWeight: Record<Severity, number> = {
   [Severity.Low]: 1,
 };
 
-export function filterItems(items: WatchedItem[], params: {
-  statusTab: "active" | "handled";
-  searchQuery: string;
-  severityFilter: SeverityFilter;
-  categoryFilter: string;
-}) {
+export function filterItems(
+  items: WatchedItem[],
+  params: {
+    statusTab: "active" | "handled";
+    searchQuery: string;
+    severityFilter: SeverityFilter;
+    categoryFilter: string;
+  },
+) {
   const { statusTab, searchQuery, severityFilter, categoryFilter } = params;
 
   let filtered = items.filter(
-    (item) => item.status === statusTab || (statusTab === "handled" && item.status === ItemStatus.Snoozed)
+    (item) =>
+      item.status === statusTab ||
+      (statusTab === "handled" && item.status === ItemStatus.Snoozed),
   );
 
   if (searchQuery.trim()) {
     const q = searchQuery.toLowerCase();
     filtered = filtered.filter(
-      (item) => item.title.toLowerCase().includes(q) || item.category.name.toLowerCase().includes(q)
+      (item) =>
+        item.title.toLowerCase().includes(q) ||
+        item.category.name.toLowerCase().includes(q),
     );
   }
 
@@ -52,7 +64,10 @@ export function sortItems(items: WatchedItem[], sortBy: SortOption) {
     }
 
     if (sortBy === "severity") {
-      return severityWeight[b.severity] - severityWeight[a.severity] || getDaysUntil(a.nextDate) - getDaysUntil(b.nextDate);
+      return (
+        severityWeight[b.severity] - severityWeight[a.severity] ||
+        getDaysUntil(a.nextDate) - getDaysUntil(b.nextDate)
+      );
     }
 
     return getDaysUntil(a.nextDate) - getDaysUntil(b.nextDate);

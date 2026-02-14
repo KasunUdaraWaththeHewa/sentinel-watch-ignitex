@@ -11,10 +11,17 @@ interface WatchedItemsContextValue {
   reactivateItem: (id: string) => void;
 }
 
-const WatchedItemsContext = createContext<WatchedItemsContextValue | undefined>(undefined);
+const WatchedItemsContext = createContext<WatchedItemsContextValue | undefined>(
+  undefined,
+);
 
 const reviveItems = (serialized: string): WatchedItem[] => {
-  const parsed = JSON.parse(serialized) as Array<Omit<WatchedItem, "nextDate" | "createdAt"> & { nextDate: string; createdAt: string }>;
+  const parsed = JSON.parse(serialized) as Array<
+    Omit<WatchedItem, "nextDate" | "createdAt"> & {
+      nextDate: string;
+      createdAt: string;
+    }
+  >;
 
   return parsed.map((item) => ({
     ...item,
@@ -23,10 +30,17 @@ const reviveItems = (serialized: string): WatchedItem[] => {
   }));
 };
 
-const sortByDateAsc = (items: WatchedItem[]) => [...items].sort((a, b) => a.nextDate.getTime() - b.nextDate.getTime());
+const sortByDateAsc = (items: WatchedItem[]) =>
+  [...items].sort((a, b) => a.nextDate.getTime() - b.nextDate.getTime());
 
-export function WatchedItemsProvider({ children }: { children: React.ReactNode }) {
-  const [items, setItems] = useState<WatchedItem[]>(() => sortByDateAsc(mockWatchedItems));
+export function WatchedItemsProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const [items, setItems] = useState<WatchedItem[]>(() =>
+    sortByDateAsc(mockWatchedItems),
+  );
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -48,7 +62,7 @@ export function WatchedItemsProvider({ children }: { children: React.ReactNode }
 
   const updateStatus = (id: string, status: ItemStatus) => {
     setItems((current) =>
-      current.map((item) => (item.id === id ? { ...item, status } : item))
+      current.map((item) => (item.id === id ? { ...item, status } : item)),
     );
   };
 
@@ -59,10 +73,14 @@ export function WatchedItemsProvider({ children }: { children: React.ReactNode }
       snoozeItem: (id: string) => updateStatus(id, ItemStatus.Snoozed),
       reactivateItem: (id: string) => updateStatus(id, ItemStatus.Active),
     }),
-    [items]
+    [items],
   );
 
-  return <WatchedItemsContext.Provider value={value}>{children}</WatchedItemsContext.Provider>;
+  return (
+    <WatchedItemsContext.Provider value={value}>
+      {children}
+    </WatchedItemsContext.Provider>
+  );
 }
 
 export function useWatchedItems() {

@@ -30,7 +30,10 @@ export function ThemeToggle() {
           <Moon className="absolute h-4 w-4 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-36 glass-surface rounded-xl border-sentinel-border">
+      <DropdownMenuContent
+        align="end"
+        className="w-36 glass-surface rounded-xl border-sentinel-border"
+      >
         {themeItems.map((item) => {
           const Icon = item.icon;
           const active = theme === item.value;
@@ -44,7 +47,9 @@ export function ThemeToggle() {
                 <Icon className="h-3.5 w-3.5" />
                 {item.label}
               </span>
-              {active && <Check className="h-3.5 w-3.5 text-sentinel-accent-cyan" />}
+              {active && (
+                <Check className="h-3.5 w-3.5 text-sentinel-accent-cyan" />
+              )}
             </DropdownMenuItem>
           );
         })}

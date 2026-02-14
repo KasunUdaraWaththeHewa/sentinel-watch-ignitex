@@ -11,7 +11,13 @@ interface AppLayoutProps {
   showDate?: boolean;
 }
 
-export function AppLayout({ title, subtitle, children, headerRight, showDate = true }: AppLayoutProps) {
+export function AppLayout({
+  title,
+  subtitle,
+  children,
+  headerRight,
+  showDate = true,
+}: AppLayoutProps) {
   const now = new Date();
 
   return (
@@ -34,7 +40,9 @@ export function AppLayout({ title, subtitle, children, headerRight, showDate = t
               <h1 className="text-2xl sm:text-3xl font-display font-semibold text-foreground tracking-tight">
                 {title}
               </h1>
-              {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
+              {subtitle && (
+                <p className="text-sm text-muted-foreground">{subtitle}</p>
+              )}
             </div>
             {headerRight && <div className="flex-shrink-0">{headerRight}</div>}
           </div>

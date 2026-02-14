@@ -128,9 +128,21 @@
   body {
     @apply bg-background text-foreground font-body antialiased;
     background-image:
-      radial-gradient(circle at 12% -5%, hsl(var(--sentinel-accent-violet) / 0.2) 0, transparent 35%),
-      radial-gradient(circle at 88% -12%, hsl(var(--sentinel-accent-cyan) / 0.17) 0, transparent 38%),
-      radial-gradient(circle at 50% 120%, hsl(var(--sentinel-accent-violet) / 0.1) 0, transparent 45%);
+      radial-gradient(
+        circle at 12% -5%,
+        hsl(var(--sentinel-accent-violet) / 0.2) 0,
+        transparent 35%
+      ),
+      radial-gradient(
+        circle at 88% -12%,
+        hsl(var(--sentinel-accent-cyan) / 0.17) 0,
+        transparent 38%
+      ),
+      radial-gradient(
+        circle at 50% 120%,
+        hsl(var(--sentinel-accent-violet) / 0.1) 0,
+        transparent 45%
+      );
   }
 
   h1,
@@ -155,7 +167,9 @@
   .glass-surface-hover:hover {
     background: hsl(var(--sentinel-surface-alpha));
     border-color: hsl(var(--sentinel-glow));
-    box-shadow: 0 0 0 1px hsl(var(--sentinel-glow) / 0.14), 0 0 35px -12px hsl(var(--sentinel-glow));
+    box-shadow:
+      0 0 0 1px hsl(var(--sentinel-glow) / 0.14),
+      0 0 35px -12px hsl(var(--sentinel-glow));
   }
 
   .glass-pill {
@@ -163,14 +177,28 @@
   }
 
   .sentinel-glow {
-    box-shadow: 0 0 0 1px hsl(var(--sentinel-glow) / 0.15), 0 0 30px -12px hsl(var(--sentinel-glow));
+    box-shadow:
+      0 0 0 1px hsl(var(--sentinel-glow) / 0.15),
+      0 0 30px -12px hsl(var(--sentinel-glow));
   }
 
   .bg-noise {
     background-image:
-      radial-gradient(circle at 15% 10%, hsl(var(--sentinel-accent-violet) / 0.12), transparent 33%),
-      radial-gradient(circle at 85% 20%, hsl(var(--sentinel-accent-cyan) / 0.1), transparent 35%),
-      radial-gradient(circle at 50% 100%, hsl(var(--sentinel-accent-violet) / 0.09), transparent 45%),
+      radial-gradient(
+        circle at 15% 10%,
+        hsl(var(--sentinel-accent-violet) / 0.12),
+        transparent 33%
+      ),
+      radial-gradient(
+        circle at 85% 20%,
+        hsl(var(--sentinel-accent-cyan) / 0.1),
+        transparent 35%
+      ),
+      radial-gradient(
+        circle at 50% 100%,
+        hsl(var(--sentinel-accent-violet) / 0.09),
+        transparent 45%
+      ),
       url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.035'/%3E%3C/svg%3E");
   }
 

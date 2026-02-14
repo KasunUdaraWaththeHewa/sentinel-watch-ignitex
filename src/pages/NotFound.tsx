@@ -9,7 +9,10 @@ const NotFound = () => {
   const location = useLocation();
 
   useEffect(() => {
-    console.error("404 Error: User attempted to access non-existent route:", location.pathname);
+    console.error(
+      "404 Error: User attempted to access non-existent route:",
+      location.pathname,
+    );
   }, [location.pathname]);
 
   return (
@@ -37,10 +40,15 @@ const NotFound = () => {
           </motion.div>
 
           <div className="space-y-2">
-            <h1 className="text-5xl sm:text-6xl font-display font-bold text-foreground tracking-tight">404</h1>
-            <p className="text-lg font-display font-medium text-foreground">Page not found</p>
+            <h1 className="text-5xl sm:text-6xl font-display font-bold text-foreground tracking-tight">
+              404
+            </h1>
+            <p className="text-lg font-display font-medium text-foreground">
+              Page not found
+            </p>
             <p className="text-sm text-muted-foreground max-w-xs mx-auto">
-              Sentinel couldn't find what you're looking for. The page may have moved or doesn't exist.
+              Sentinel couldn't find what you're looking for. The page may have
+              moved or doesn't exist.
             </p>
           </div>
         </div>
@@ -52,14 +60,20 @@ const NotFound = () => {
             </Button>
           </Link>
           <Link to="/">
-            <Button variant="outline" className="h-11 px-6 rounded-xl border-sentinel-border hover:bg-sentinel-surface">
+            <Button
+              variant="outline"
+              className="h-11 px-6 rounded-xl border-sentinel-border hover:bg-sentinel-surface"
+            >
               Landing Page
             </Button>
           </Link>
         </div>
 
         <p className="text-xs text-muted-foreground">
-          Tried to access: <code className="px-1.5 py-0.5 rounded bg-muted text-muted-foreground text-[11px]">{location.pathname}</code>
+          Tried to access:{" "}
+          <code className="px-1.5 py-0.5 rounded bg-muted text-muted-foreground text-[11px]">
+            {location.pathname}
+          </code>
         </p>
       </motion.div>
     </div>

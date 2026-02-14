@@ -25,25 +25,25 @@ const App = () => (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <WatchedItemsProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/add" element={<AddItem />} />
-            <Route path="/categories" element={<Categories />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/billing" element={<Billing />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/item/:id" element={<ItemDetail />} />
-            <Route path="/profile" element={<Profile />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Landing />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/add" element={<AddItem />} />
+              <Route path="/categories" element={<Categories />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/billing" element={<Billing />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/item/:id" element={<ItemDetail />} />
+              <Route path="/profile" element={<Profile />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
         </WatchedItemsProvider>
       </TooltipProvider>
     </QueryClientProvider>

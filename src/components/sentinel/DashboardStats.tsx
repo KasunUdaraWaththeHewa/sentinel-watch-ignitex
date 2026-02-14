@@ -11,7 +11,13 @@ interface StatCardProps {
   delay?: number;
 }
 
-function StatCard({ icon: Icon, value, label, accent = "cyan", delay = 0 }: StatCardProps) {
+function StatCard({
+  icon: Icon,
+  value,
+  label,
+  accent = "cyan",
+  delay = 0,
+}: StatCardProps) {
   const accentMap = {
     cyan: {
       iconBg: "bg-sentinel-accent-cyan/10",
@@ -48,14 +54,24 @@ function StatCard({ icon: Icon, value, label, accent = "cyan", delay = 0 }: Stat
       transition={{ duration: 0.5, delay, ease: SENTINEL_EASE }}
       className={cn(
         "glass-surface rounded-2xl p-4 sm:p-5 flex flex-col gap-3 ring-1",
-        a.ring
+        a.ring,
       )}
     >
-      <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center", a.iconBg)}>
+      <div
+        className={cn(
+          "w-9 h-9 rounded-xl flex items-center justify-center",
+          a.iconBg,
+        )}
+      >
         <Icon className={cn("h-4.5 w-4.5", a.iconColor)} />
       </div>
       <div>
-        <p className={cn("text-2xl sm:text-3xl font-display font-bold tracking-tight", a.valueColor)}>
+        <p
+          className={cn(
+            "text-2xl sm:text-3xl font-display font-bold tracking-tight",
+            a.valueColor,
+          )}
+        >
           {value}
         </p>
         <p className="text-xs text-muted-foreground mt-0.5">{label}</p>
@@ -71,13 +87,42 @@ interface DashboardStatsProps {
   handled: number;
 }
 
-export function DashboardStats({ watching, urgent, thisWeek, handled }: DashboardStatsProps) {
+export function DashboardStats({
+  watching,
+  urgent,
+  thisWeek,
+  handled,
+}: DashboardStatsProps) {
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-      <StatCard icon={Eye} value={watching} label="Watching" accent="cyan" delay={0.05} />
-      <StatCard icon={AlertTriangle} value={urgent} label="Urgent" accent={urgent > 0 ? "high" : "cyan"} delay={0.1} />
-      <StatCard icon={TrendingUp} value={thisWeek} label="This Week" accent="medium" delay={0.15} />
-      <StatCard icon={CheckCircle2} value={handled} label="Handled" accent="low" delay={0.2} />
+      <StatCard
+        icon={Eye}
+        value={watching}
+        label="Watching"
+        accent="cyan"
+        delay={0.05}
+      />
+      <StatCard
+        icon={AlertTriangle}
+        value={urgent}
+        label="Urgent"
+        accent={urgent > 0 ? "high" : "cyan"}
+        delay={0.1}
+      />
+      <StatCard
+        icon={TrendingUp}
+        value={thisWeek}
+        label="This Week"
+        accent="medium"
+        delay={0.15}
+      />
+      <StatCard
+        icon={CheckCircle2}
+        value={handled}
+        label="Handled"
+        accent="low"
+        delay={0.2}
+      />
     </div>
   );
 }
