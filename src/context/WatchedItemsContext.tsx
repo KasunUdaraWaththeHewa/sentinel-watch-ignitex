@@ -26,11 +26,28 @@ const WatchedItemsContext = createContext<WatchedItemsContextValue | undefined>(
 const reviveItems = (serialized: string): WatchedItem[] => {
   const parsed = JSON.parse(serialized) as SerializedWatchedItem[];
 
-  return parsed.map((item) => ({
-    ...item,
-    nextDate: new Date(item.nextDate),
-    createdAt: new Date(item.createdAt),
-  }));
+  return parsed
+    .map((item) => {
+      const nextDate = new Date(item.nextDate);
+      const createdAt = new Date(item.createdAt);
+
+      if (
+        !item.id ||
+        !item.title?.trim() ||
+        Number.isNaN(nextDate.getTime()) ||
+        Number.isNaN(createdAt.getTime())
+      ) {
+        return null;
+      }
+
+      return {
+        ...item,
+        title: item.title.trim(),
+        nextDate,
+        createdAt,
+      };
+    })
+    .filter((item): item is WatchedItem => item !== null);
 };
 
 const sortByDateAsc = (items: WatchedItem[]) =>
