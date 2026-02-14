@@ -35,7 +35,7 @@ export function WatchedItemCard({ item, onClick, onMarkHandled, onSnooze, onReac
     <button
       onClick={onClick}
       className={cn(
-        "glass-surface-hover w-full text-left rounded-2xl p-4 sm:px-5 sm:py-4 flex items-start sm:items-center gap-3.5 sm:gap-4 group cursor-pointer animate-sentinel-fade-in",
+        "glass-surface-hover w-full text-left rounded-2xl p-4 sm:px-5 sm:py-4 flex items-start sm:items-center gap-3.5 sm:gap-4 group cursor-pointer animate-sentinel-fade-in transition-transform duration-300 hover:-translate-y-0.5",
         isUrgent && "ring-1 ring-sentinel-severity-high/20"
       )}
     >
@@ -116,7 +116,7 @@ function ActionPill({ icon: Icon, label, onClick }: { icon: React.ComponentType<
         event.stopPropagation();
         onClick();
       }}
-      className="text-[11px] h-7 px-2.5 rounded-md bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors inline-flex items-center gap-1"
+      className="text-[11px] h-7 px-2.5 rounded-md bg-muted/55 text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors inline-flex items-center gap-1"
     >
       <Icon className="h-3 w-3" />
       {label}

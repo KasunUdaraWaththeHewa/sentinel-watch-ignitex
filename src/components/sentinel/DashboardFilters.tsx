@@ -56,7 +56,7 @@ export function DashboardFilters({
             placeholder="Search items..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full h-11 pl-10 pr-10 rounded-xl glass-surface border-sentinel-border bg-transparent text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-1 focus:ring-sentinel-accent-cyan/40 transition-all duration-300"
+            className="w-full h-11 pl-10 pr-10 rounded-xl glass-surface bg-transparent text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-1 focus:ring-sentinel-accent-cyan/40 transition-all duration-300"
           />
           {searchQuery && (
             <button onClick={() => onSearchChange("")} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
@@ -65,7 +65,7 @@ export function DashboardFilters({
           )}
         </div>
 
-        <div className="h-11 rounded-xl glass-surface border-sentinel-border px-3 text-sm text-muted-foreground flex items-center gap-2">
+        <div className="h-11 rounded-xl glass-surface px-3 text-sm text-muted-foreground flex items-center gap-2">
           <ArrowDownUp className="h-4 w-4" />
           <select
             value={sortBy}
@@ -84,7 +84,7 @@ export function DashboardFilters({
         <button
           onClick={() => setShowFilters(!showFilters)}
           className={cn(
-            "h-11 px-4 rounded-xl glass-surface border-sentinel-border flex items-center gap-2 text-sm font-medium transition-all duration-300 flex-shrink-0 justify-center",
+            "h-11 px-4 rounded-xl glass-surface flex items-center gap-2 text-sm font-medium transition-all duration-300 flex-shrink-0 justify-center",
             showFilters || activeFilters > 0
               ? "text-sentinel-accent-cyan ring-1 ring-sentinel-accent-cyan/20"
               : "text-muted-foreground hover:text-foreground"
@@ -106,7 +106,7 @@ export function DashboardFilters({
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.34, ease: "easeOut" }}
             className="overflow-hidden"
           >
             <div className="glass-surface rounded-xl p-4 sm:p-5 space-y-4">
