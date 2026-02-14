@@ -144,19 +144,19 @@ export function CommandCenter() {
       {statusTab === "active" && (
         <div className="space-y-6">
           {nextUp.length > 0 && (
-            <DashboardSection title="Next Up" subtitle="Within 7 days" items={nextUp} startIndex={0} onItemClick={goToItem} accent="high" onMarkHandled={markHandled} onSnooze={snoozeItem} />
+            <DashboardSection title="Next Up" subtitle="Within 7 days" items={nextUp} onItemClick={goToItem} accent="high" onMarkHandled={markHandled} onSnooze={snoozeItem} />
           )}
           {upcoming.length > 0 && (
-            <DashboardSection title="Upcoming" subtitle="Within 30 days" items={upcoming} startIndex={nextUp.length} onItemClick={goToItem} accent="medium" onMarkHandled={markHandled} onSnooze={snoozeItem} />
+            <DashboardSection title="Upcoming" subtitle="Within 30 days" items={upcoming} onItemClick={goToItem} accent="medium" onMarkHandled={markHandled} onSnooze={snoozeItem} />
           )}
           {onWatch.length > 0 && (
-            <DashboardSection title="On Watch" subtitle="30+ days away" items={onWatch} startIndex={nextUp.length + upcoming.length} onItemClick={goToItem} onMarkHandled={markHandled} onSnooze={snoozeItem} />
+            <DashboardSection title="On Watch" subtitle="30+ days away" items={onWatch} onItemClick={goToItem} onMarkHandled={markHandled} onSnooze={snoozeItem} />
           )}
         </div>
       )}
 
       {statusTab === "handled" && filteredItems.length > 0 && (
-        <DashboardSection title="Completed" subtitle="Previously handled" items={filteredItems} startIndex={0} onItemClick={goToItem} onReactivate={reactivateItem} />
+        <DashboardSection title="Completed" subtitle="Previously handled" items={filteredItems} onItemClick={goToItem} onReactivate={reactivateItem} />
       )}
 
       {filteredItems.length === 0 && <DashboardEmpty statusTab={statusTab} hasFilters={!!searchQuery || activeFilters > 0} />}

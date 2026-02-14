@@ -131,7 +131,6 @@
       radial-gradient(circle at 12% -5%, hsl(var(--sentinel-accent-violet) / 0.2) 0, transparent 35%),
       radial-gradient(circle at 88% -12%, hsl(var(--sentinel-accent-cyan) / 0.17) 0, transparent 38%),
       radial-gradient(circle at 50% 120%, hsl(var(--sentinel-accent-violet) / 0.1) 0, transparent 45%);
-    background-attachment: fixed;
   }
 
   h1,
@@ -146,7 +145,7 @@
 
 @layer components {
   .glass-surface {
-    @apply border border-sentinel-border bg-sentinel-surface backdrop-blur-2xl shadow-[0_18px_45px_-25px_hsl(var(--sentinel-glow))];
+    @apply border border-sentinel-border bg-sentinel-surface backdrop-blur-md shadow-[0_18px_45px_-25px_hsl(var(--sentinel-glow))];
   }
 
   .glass-surface-hover {
