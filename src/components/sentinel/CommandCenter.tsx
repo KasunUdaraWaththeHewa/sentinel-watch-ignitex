@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { mockWatchedItems } from "@/lib/mock-data";
-import { DEFAULT_CATEGORIES, SENTINEL_EASE } from "@/lib/constants";
+import { SENTINEL_EASE } from "@/lib/constants";
 import { formatDate, getDaysUntil } from "@/lib/date-utils";
 import { Severity, ItemStatus, type SeverityFilter, type StatusTab } from "@/types/sentinel";
 import { DashboardStats } from "./DashboardStats";
@@ -21,13 +21,11 @@ export function CommandCenter() {
   const [severityFilter, setSeverityFilter] = useState<SeverityFilter>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
 
-  // Compute stats
   const allActive = mockWatchedItems.filter((i) => i.status === ItemStatus.Active);
   const allHandled = mockWatchedItems.filter((i) => i.status === ItemStatus.Handled || i.status === ItemStatus.Snoozed);
   const urgentCount = allActive.filter((i) => getDaysUntil(i.nextDate) <= 7 && i.severity === Severity.High).length;
   const thisWeekCount = allActive.filter((i) => getDaysUntil(i.nextDate) <= 7).length;
 
-  // Filter items
   const filteredItems = useMemo(() => {
     let items = mockWatchedItems.filter(
       (i) => i.status === statusTab || (statusTab === "handled" && i.status === ItemStatus.Snoozed)
@@ -41,50 +39,41 @@ export function CommandCenter() {
     return items;
   }, [statusTab, searchQuery, severityFilter, categoryFilter]);
 
-  // Bucket active items
   const activeItems = filteredItems.filter(() => statusTab === "active");
   const nextUp = activeItems.filter((i) => getDaysUntil(i.nextDate) <= 7);
-  const upcoming = activeItems.filter((i) => { const d = getDaysUntil(i.nextDate); return d > 7 && d <= 30; });
+  const upcoming = activeItems.filter((i) => {
+    const d = getDaysUntil(i.nextDate);
+    return d > 7 && d <= 30;
+  });
   const onWatch = activeItems.filter((i) => getDaysUntil(i.nextDate) > 30);
 
   const hasUrgent = nextUp.some((i) => i.severity === Severity.High);
   const activeFilters = (severityFilter !== "all" ? 1 : 0) + (categoryFilter !== "all" ? 1 : 0);
 
-  const statusMessage = statusTab === "handled"
-    ? "Here's what you've already taken care of."
-    : hasUrgent
-      ? "Some items need your attention soon."
-      : "Everything looks good — Sentinel is watching.";
+  const statusMessage =
+    statusTab === "handled"
+      ? "Here's what you've already taken care of."
+      : hasUrgent
+        ? "Some items need your attention soon."
+        : "Everything looks good — Sentinel is watching.";
 
   const goToItem = (id: string) => navigate(`/item/${id}`);
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-28 md:pb-12 space-y-6">
-      {/* Header */}
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-28 md:pb-12 space-y-6">
       <motion.div
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: SENTINEL_EASE }}
-        className="space-y-1"
+        className="space-y-2 rounded-2xl glass-surface p-5 sm:p-6"
       >
-        <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-          {formatDate(now)}
-        </p>
-        <h1 className="text-2xl sm:text-3xl font-display font-semibold text-foreground tracking-tight">
-          {greeting}.
-        </h1>
+        <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">{formatDate(now)}</p>
+        <h1 className="text-2xl sm:text-3xl font-display font-semibold text-foreground tracking-tight">{greeting}.</h1>
         <p className="text-sm text-muted-foreground">{statusMessage}</p>
       </motion.div>
 
-      {/* Stats */}
-      <DashboardStats
-        watching={allActive.length}
-        urgent={urgentCount}
-        thisWeek={thisWeekCount}
-        handled={allHandled.length}
-      />
+      <DashboardStats watching={allActive.length} urgent={urgentCount} thisWeek={thisWeekCount} handled={allHandled.length} />
 
-      {/* Filters */}
       <DashboardFilters
         statusTab={statusTab}
         onStatusTabChange={setStatusTab}
@@ -96,7 +85,6 @@ export function CommandCenter() {
         onCategoryFilterChange={setCategoryFilter}
       />
 
-      {/* Active Sections */}
       {statusTab === "active" && (
         <div className="space-y-6">
           {nextUp.length > 0 && (
@@ -111,15 +99,11 @@ export function CommandCenter() {
         </div>
       )}
 
-      {/* Handled */}
       {statusTab === "handled" && filteredItems.length > 0 && (
         <DashboardSection title="Completed" subtitle="Previously handled" items={filteredItems} startIndex={0} onItemClick={goToItem} />
       )}
 
-      {/* Empty */}
-      {filteredItems.length === 0 && (
-        <DashboardEmpty statusTab={statusTab} hasFilters={!!searchQuery || activeFilters > 0} />
-      )}
+      {filteredItems.length === 0 && <DashboardEmpty statusTab={statusTab} hasFilters={!!searchQuery || activeFilters > 0} />}
     </div>
   );
 }

@@ -5,6 +5,7 @@ import {
   ArrowUpRight, Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/sentinel/ThemeToggle";
 import { useRef, useEffect, useState } from "react";
 import {
   LANDING_FEATURES, LANDING_HOW_IT_WORKS, LANDING_STATS, LANDING_BENEFITS,
@@ -64,6 +65,7 @@ const Landing = () => {
             <a href="#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</a>
           </nav>
           <nav className="flex items-center gap-2 sm:gap-3">
+            <ThemeToggle />
             <Link to="/login" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5">Sign in</Link>
             <Link to="/register">
               <Button className="h-9 px-5 bg-sentinel-accent-cyan text-background text-sm font-medium rounded-lg hover:opacity-90 transition-opacity">Get Started</Button>
@@ -77,7 +79,7 @@ const Landing = () => {
         <div className="absolute top-1/3 left-1/4 w-[500px] h-[500px] rounded-full bg-sentinel-accent-cyan/5 blur-[150px] pointer-events-none" />
         <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-sentinel-accent-violet/5 blur-[120px] pointer-events-none" />
 
-        <div className="max-w-5xl mx-auto text-center relative z-10">
+        <div className="max-w-6xl mx-auto text-center relative z-10">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, ease: SENTINEL_EASE }} className="space-y-8">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-surface text-xs sm:text-sm font-medium text-muted-foreground">
               <Zap className="h-3.5 w-3.5 text-sentinel-accent-cyan" />
