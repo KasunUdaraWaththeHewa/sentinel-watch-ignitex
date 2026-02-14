@@ -50,10 +50,20 @@ export function WatchedItemCard({
         : "bg-sentinel-accent-cyan/60";
 
   return (
-    <button
+    <div
+      role="button"
+      tabIndex={0}
       onClick={onClick}
+      onKeyDown={(event) => {
+        if (!onClick) return;
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onClick();
+        }
+      }}
       className={cn(
         "glass-surface-hover w-full text-left rounded-2xl p-4 sm:px-5 sm:py-4 flex items-start sm:items-center gap-3.5 sm:gap-4 group cursor-pointer animate-sentinel-fade-in transition-transform duration-300 hover:-translate-y-0.5",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sentinel-accent-cyan/60",
         isUrgent && "ring-1 ring-sentinel-severity-high/20",
       )}
     >
@@ -94,7 +104,7 @@ export function WatchedItemCard({
           {item.title}
         </h3>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 min-w-0">
           <div className="flex-1 max-w-[120px] h-1 rounded-full bg-muted/60 overflow-hidden">
             <div
               className={cn(
@@ -104,7 +114,7 @@ export function WatchedItemCard({
               style={{ width: `${progress}%` }}
             />
           </div>
-          <span className="flex items-center gap-1 text-xs text-muted-foreground">
+          <span className="flex items-center gap-1 text-xs text-muted-foreground whitespace-nowrap">
             <Clock className="h-3 w-3" />
             {timeRemaining}
           </span>
@@ -150,7 +160,7 @@ export function WatchedItemCard({
       </div>
 
       <ChevronRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex-shrink-0 mt-3 sm:mt-0" />
-    </button>
+    </div>
   );
 }
 
