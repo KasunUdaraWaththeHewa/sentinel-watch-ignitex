@@ -1,14 +1,7 @@
 import { TopNav, BottomNav } from "@/components/sentinel/Navigation";
 import { motion } from "framer-motion";
-
-function formatDate(date: Date): string {
-  return date.toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
-}
+import { SENTINEL_EASE } from "@/lib/constants";
+import { formatDate } from "@/lib/date-utils";
 
 interface AppLayoutProps {
   title: string;
@@ -28,8 +21,8 @@ export function AppLayout({ title, subtitle, children, headerRight, showDate = t
         <motion.div
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="space-y-2"
+          transition={{ duration: 0.6, ease: SENTINEL_EASE }}
+          className="space-y-1"
         >
           {showDate && (
             <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
