@@ -3,20 +3,17 @@ import { CATEGORY_ICONS } from "@/lib/constants";
 import { getTimeRemaining, getDaysUntil } from "@/lib/date-utils";
 import { SeverityBadge } from "./SeverityBadge";
 import { Clock, ChevronRight, CheckCircle2, Pause, RotateCcw } from "lucide-react";
-import { motion } from "framer-motion";
-import { SENTINEL_EASE } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
 interface WatchedItemCardProps {
   item: WatchedItem;
-  index: number;
   onClick?: () => void;
   onMarkHandled?: () => void;
   onSnooze?: () => void;
   onReactivate?: () => void;
 }
 
-export function WatchedItemCard({ item, index, onClick, onMarkHandled, onSnooze, onReactivate }: WatchedItemCardProps) {
+export function WatchedItemCard({ item, onClick, onMarkHandled, onSnooze, onReactivate }: WatchedItemCardProps) {
   const Icon = CATEGORY_ICONS[item.category.icon] || Clock;
   const timeRemaining = getTimeRemaining(item.nextDate);
   const daysLeft = getDaysUntil(item.nextDate);
@@ -35,13 +32,10 @@ export function WatchedItemCard({ item, index, onClick, onMarkHandled, onSnooze,
         : "bg-sentinel-accent-cyan/60";
 
   return (
-    <motion.button
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45, delay: index * 0.05, ease: SENTINEL_EASE }}
+    <button
       onClick={onClick}
       className={cn(
-        "glass-surface-hover w-full text-left rounded-2xl p-4 sm:px-5 sm:py-4 flex items-start sm:items-center gap-3.5 sm:gap-4 group cursor-pointer",
+        "glass-surface-hover w-full text-left rounded-2xl p-4 sm:px-5 sm:py-4 flex items-start sm:items-center gap-3.5 sm:gap-4 group cursor-pointer animate-sentinel-fade-in",
         isUrgent && "ring-1 ring-sentinel-severity-high/20"
       )}
     >
@@ -73,11 +67,9 @@ export function WatchedItemCard({ item, index, onClick, onMarkHandled, onSnooze,
 
         <div className="flex items-center gap-3">
           <div className="flex-1 max-w-[120px] h-1 rounded-full bg-muted/60 overflow-hidden">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${progress}%` }}
-              transition={{ duration: 0.8, delay: index * 0.05 + 0.3, ease: SENTINEL_EASE }}
-              className={cn("h-full rounded-full", progressColor)}
+            <div
+              className={cn("h-full rounded-full transition-[width] duration-500 ease-out", progressColor)}
+              style={{ width: `${progress}%` }}
             />
           </div>
           <span className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -109,7 +101,7 @@ export function WatchedItemCard({ item, index, onClick, onMarkHandled, onSnooze,
       </div>
 
       <ChevronRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex-shrink-0 mt-3 sm:mt-0" />
-    </motion.button>
+    </button>
   );
 }
 
