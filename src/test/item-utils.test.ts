@@ -22,4 +22,11 @@ describe("item utils", () => {
     expect(sorted[0].severity).toBe(Severity.High);
     expect(sorted.at(-1)?.severity).toBe(Severity.Low);
   });
+
+  it("sorts items by newest created date", () => {
+    const sorted = sortItems(mockWatchedItems, "newest");
+
+    expect(sorted[0].createdAt.getTime()).toBeGreaterThanOrEqual(sorted[1].createdAt.getTime());
+    expect(sorted.at(-1)?.createdAt.getTime()).toBeLessThanOrEqual(sorted.at(-2)?.createdAt.getTime() ?? Infinity);
+  });
 });

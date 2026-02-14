@@ -1,7 +1,7 @@
 import { getDaysUntil } from "@/lib/date-utils";
 import { ItemStatus, Severity, type SeverityFilter, type WatchedItem } from "@/types/sentinel";
 
-export type SortOption = "dueSoon" | "severity" | "alphabetical";
+export type SortOption = "dueSoon" | "severity" | "alphabetical" | "newest";
 
 const severityWeight: Record<Severity, number> = {
   [Severity.High]: 3,
@@ -43,6 +43,10 @@ export function sortItems(items: WatchedItem[], sortBy: SortOption) {
   const sorted = [...items];
 
   sorted.sort((a, b) => {
+    if (sortBy === "newest") {
+      return b.createdAt.getTime() - a.createdAt.getTime();
+    }
+
     if (sortBy === "alphabetical") {
       return a.title.localeCompare(b.title);
     }

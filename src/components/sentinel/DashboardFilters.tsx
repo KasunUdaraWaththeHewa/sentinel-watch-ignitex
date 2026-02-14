@@ -23,6 +23,7 @@ const SORT_OPTIONS: Array<{ value: SortOption; label: string }> = [
   { value: "dueSoon", label: "Due soon" },
   { value: "severity", label: "Severity" },
   { value: "alphabetical", label: "A-Z" },
+  { value: "newest", label: "Newest" },
 ];
 
 export function DashboardFilters({
