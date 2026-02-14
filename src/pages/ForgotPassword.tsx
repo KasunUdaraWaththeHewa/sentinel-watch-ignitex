@@ -14,7 +14,10 @@ const ForgotPassword = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => { setLoading(false); setSent(true); }, 1200);
+    setTimeout(() => {
+      setLoading(false);
+      setSent(true);
+    }, 1200);
   };
 
   return (
@@ -32,24 +35,42 @@ const ForgotPassword = () => {
             <div className="w-10 h-10 rounded-xl bg-sentinel-accent-cyan/15 flex items-center justify-center sentinel-glow transition-transform duration-300 group-hover:scale-105">
               <Eye className="h-5 w-5 text-sentinel-accent-cyan" />
             </div>
-            <span className="font-display font-semibold text-lg text-foreground tracking-tight">Sentinel</span>
+            <span className="font-display font-semibold text-lg text-foreground tracking-tight">
+              Sentinel
+            </span>
           </Link>
 
           <AnimatePresence mode="wait">
             {sent ? (
-              <motion.div key="sent" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
+              <motion.div
+                key="sent"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-3"
+              >
                 <div className="w-16 h-16 rounded-2xl bg-sentinel-accent-cyan/10 mx-auto flex items-center justify-center">
                   <CheckCircle2 className="h-8 w-8 text-sentinel-accent-cyan" />
                 </div>
-                <h1 className="text-2xl font-display font-semibold text-foreground tracking-tight">Check your inbox</h1>
+                <h1 className="text-2xl font-display font-semibold text-foreground tracking-tight">
+                  Check your inbox
+                </h1>
                 <p className="text-sm text-muted-foreground">
-                  We've sent a password reset link to <span className="text-foreground font-medium">{email}</span>
+                  We've sent a password reset link to{" "}
+                  <span className="text-foreground font-medium">{email}</span>
                 </p>
               </motion.div>
             ) : (
-              <motion.div key="form" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                <h1 className="text-2xl font-display font-semibold text-foreground tracking-tight">Reset password</h1>
-                <p className="text-sm text-muted-foreground mt-1">Enter your email and we'll send a reset link</p>
+              <motion.div
+                key="form"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+              >
+                <h1 className="text-2xl font-display font-semibold text-foreground tracking-tight">
+                  Reset password
+                </h1>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Enter your email and we'll send a reset link
+                </p>
               </motion.div>
             )}
           </AnimatePresence>
@@ -78,13 +99,18 @@ const ForgotPassword = () => {
               {loading ? (
                 <div className="w-5 h-5 border-2 border-background/30 border-t-background rounded-full animate-spin" />
               ) : (
-                <>Send Reset Link <ArrowRight className="h-4 w-4" /></>
+                <>
+                  Send Reset Link <ArrowRight className="h-4 w-4" />
+                </>
               )}
             </Button>
           </form>
         )}
 
-        <Link to="/login" className="flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+        <Link
+          to="/login"
+          className="flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
           <ArrowLeft className="h-4 w-4" /> Back to sign in
         </Link>
       </motion.div>

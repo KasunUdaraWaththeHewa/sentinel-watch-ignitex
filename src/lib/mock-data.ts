@@ -2,7 +2,13 @@
 // Sentinel – Mock Data
 // ============================================
 
-import { Severity, Schedule, RegretRisk, ItemStatus, type WatchedItem } from "@/types/sentinel";
+import {
+  Severity,
+  Schedule,
+  RegretRisk,
+  ItemStatus,
+  type WatchedItem,
+} from "@/types/sentinel";
 import { DEFAULT_CATEGORIES } from "./constants";
 import { daysFromNow } from "./date-utils";
 

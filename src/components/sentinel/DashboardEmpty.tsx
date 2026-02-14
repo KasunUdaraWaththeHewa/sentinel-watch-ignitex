@@ -8,11 +8,24 @@ interface DashboardEmptyProps {
 }
 
 export function DashboardEmpty({ statusTab, hasFilters }: DashboardEmptyProps) {
-  const config = statusTab === "handled"
-    ? { icon: Archive, title: "No past items yet", desc: "Items you mark as handled will appear here." }
-    : hasFilters
-      ? { icon: Search, title: "No matching items", desc: "Try adjusting your search or filters." }
-      : { icon: Eye, title: "All clear", desc: "Sentinel is standing by — nothing needs your attention." };
+  const config =
+    statusTab === "handled"
+      ? {
+          icon: Archive,
+          title: "No past items yet",
+          desc: "Items you mark as handled will appear here.",
+        }
+      : hasFilters
+        ? {
+            icon: Search,
+            title: "No matching items",
+            desc: "Try adjusting your search or filters.",
+          }
+        : {
+            icon: Eye,
+            title: "All clear",
+            desc: "Sentinel is standing by — nothing needs your attention.",
+          };
 
   const Icon = config.icon;
 
@@ -27,8 +40,12 @@ export function DashboardEmpty({ statusTab, hasFilters }: DashboardEmptyProps) {
         <Icon className="h-6 w-6 text-sentinel-accent-cyan" />
       </div>
       <div className="space-y-2">
-        <p className="text-foreground font-display font-semibold text-lg">{config.title}</p>
-        <p className="text-muted-foreground text-sm max-w-xs mx-auto">{config.desc}</p>
+        <p className="text-foreground font-display font-semibold text-lg">
+          {config.title}
+        </p>
+        <p className="text-muted-foreground text-sm max-w-xs mx-auto">
+          {config.desc}
+        </p>
       </div>
     </motion.div>
   );
