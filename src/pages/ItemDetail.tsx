@@ -1,9 +1,9 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/sentinel/AppLayout";
-import { mockWatchedItems } from "@/lib/mock-data";
+import { useWatchedItems } from "@/context/WatchedItemsContext";
 import { CATEGORY_ICONS, SCHEDULE_LABELS, SCHEDULE_INTERVAL_DAYS } from "@/lib/constants";
 import { getTimeRemaining, formatFullDate, getDaysUntil } from "@/lib/date-utils";
-import { Schedule, RegretRisk } from "@/types/sentinel";
+import { Schedule, RegretRisk, ItemStatus } from "@/types/sentinel";
 import { SeverityBadge } from "@/components/sentinel/SeverityBadge";
 import { motion } from "framer-motion";
 import { ArrowLeft, Clock, Calendar, Shield, Repeat, Bell, CheckCircle2, Pause, FileText } from "lucide-react";
@@ -14,7 +14,8 @@ import { MS_PER_DAY } from "@/lib/constants";
 const ItemDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const item = mockWatchedItems.find((i) => i.id === id);
+  const { items, markHandled, snoozeItem, reactivateItem } = useWatchedItems();
+  const item = items.find((i) => i.id === id);
 
   if (!item) {
     return (
@@ -83,8 +84,15 @@ const ItemDetail = () => {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-2">
-          <Button variant="glass-primary" className="flex-1 gap-2 h-11"><CheckCircle2 className="h-4 w-4" /> Mark as Handled</Button>
-          <Button variant="glass" className="flex-1 gap-2 h-11"><Pause className="h-4 w-4" /> Snooze</Button>
+          {item.status !== ItemStatus.Handled && (
+            <Button variant="glass-primary" className="flex-1 gap-2 h-11" onClick={() => markHandled(item.id)}><CheckCircle2 className="h-4 w-4" /> Mark as Handled</Button>
+          )}
+          {item.status !== ItemStatus.Snoozed && item.status !== ItemStatus.Handled && (
+            <Button variant="glass" className="flex-1 gap-2 h-11" onClick={() => snoozeItem(item.id)}><Pause className="h-4 w-4" /> Snooze</Button>
+          )}
+          {item.status !== ItemStatus.Active && (
+            <Button variant="glass" className="flex-1 gap-2 h-11" onClick={() => reactivateItem(item.id)}>Reactivate</Button>
+          )}
         </div>
       </motion.div>
 

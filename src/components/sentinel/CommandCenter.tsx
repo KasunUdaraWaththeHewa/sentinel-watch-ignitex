@@ -1,5 +1,4 @@
 import { useState, useMemo } from "react";
-import { mockWatchedItems } from "@/lib/mock-data";
 import { SENTINEL_EASE } from "@/lib/constants";
 import { formatDate, getDaysUntil } from "@/lib/date-utils";
 import { Severity, ItemStatus, type SeverityFilter, type StatusTab } from "@/types/sentinel";
@@ -9,9 +8,13 @@ import { DashboardSection } from "./DashboardSection";
 import { DashboardEmpty } from "./DashboardEmpty";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { useWatchedItems } from "@/context/WatchedItemsContext";
+import { sortItems, type SortOption, filterItems } from "@/lib/item-utils";
 
 export function CommandCenter() {
   const navigate = useNavigate();
+  const { items, markHandled, snoozeItem, reactivateItem } = useWatchedItems();
+
   const now = new Date();
   const hour = now.getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
@@ -20,34 +23,33 @@ export function CommandCenter() {
   const [searchQuery, setSearchQuery] = useState("");
   const [severityFilter, setSeverityFilter] = useState<SeverityFilter>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [sortBy, setSortBy] = useState<SortOption>("dueSoon");
 
-  const allActive = mockWatchedItems.filter((i) => i.status === ItemStatus.Active);
-  const allHandled = mockWatchedItems.filter((i) => i.status === ItemStatus.Handled || i.status === ItemStatus.Snoozed);
-  const urgentCount = allActive.filter((i) => getDaysUntil(i.nextDate) <= 7 && i.severity === Severity.High).length;
-  const thisWeekCount = allActive.filter((i) => getDaysUntil(i.nextDate) <= 7).length;
+  const allActive = items.filter((item) => item.status === ItemStatus.Active);
+  const allHandled = items.filter((item) => item.status === ItemStatus.Handled || item.status === ItemStatus.Snoozed);
+  const urgentCount = allActive.filter((item) => getDaysUntil(item.nextDate) <= 7 && item.severity === Severity.High).length;
+  const thisWeekCount = allActive.filter((item) => getDaysUntil(item.nextDate) <= 7).length;
 
   const filteredItems = useMemo(() => {
-    let items = mockWatchedItems.filter(
-      (i) => i.status === statusTab || (statusTab === "handled" && i.status === ItemStatus.Snoozed)
-    );
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      items = items.filter((i) => i.title.toLowerCase().includes(q) || i.category.name.toLowerCase().includes(q));
-    }
-    if (severityFilter !== "all") items = items.filter((i) => i.severity === severityFilter);
-    if (categoryFilter !== "all") items = items.filter((i) => i.category.id === categoryFilter);
-    return items;
-  }, [statusTab, searchQuery, severityFilter, categoryFilter]);
+    const visible = filterItems(items, {
+      statusTab,
+      searchQuery,
+      severityFilter,
+      categoryFilter,
+    });
+
+    return sortItems(visible, sortBy);
+  }, [items, statusTab, searchQuery, severityFilter, categoryFilter, sortBy]);
 
   const activeItems = filteredItems.filter(() => statusTab === "active");
-  const nextUp = activeItems.filter((i) => getDaysUntil(i.nextDate) <= 7);
-  const upcoming = activeItems.filter((i) => {
-    const d = getDaysUntil(i.nextDate);
-    return d > 7 && d <= 30;
+  const nextUp = activeItems.filter((item) => getDaysUntil(item.nextDate) <= 7);
+  const upcoming = activeItems.filter((item) => {
+    const daysUntil = getDaysUntil(item.nextDate);
+    return daysUntil > 7 && daysUntil <= 30;
   });
-  const onWatch = activeItems.filter((i) => getDaysUntil(i.nextDate) > 30);
+  const onWatch = activeItems.filter((item) => getDaysUntil(item.nextDate) > 30);
 
-  const hasUrgent = nextUp.some((i) => i.severity === Severity.High);
+  const hasUrgent = nextUp.some((item) => item.severity === Severity.High);
   const activeFilters = (severityFilter !== "all" ? 1 : 0) + (categoryFilter !== "all" ? 1 : 0);
 
   const statusMessage =
@@ -83,24 +85,26 @@ export function CommandCenter() {
         onSeverityFilterChange={setSeverityFilter}
         categoryFilter={categoryFilter}
         onCategoryFilterChange={setCategoryFilter}
+        sortBy={sortBy}
+        onSortChange={setSortBy}
       />
 
       {statusTab === "active" && (
         <div className="space-y-6">
           {nextUp.length > 0 && (
-            <DashboardSection title="Next Up" subtitle="Within 7 days" items={nextUp} startIndex={0} onItemClick={goToItem} accent="high" />
+            <DashboardSection title="Next Up" subtitle="Within 7 days" items={nextUp} startIndex={0} onItemClick={goToItem} accent="high" onMarkHandled={markHandled} onSnooze={snoozeItem} />
           )}
           {upcoming.length > 0 && (
-            <DashboardSection title="Upcoming" subtitle="Within 30 days" items={upcoming} startIndex={nextUp.length} onItemClick={goToItem} accent="medium" />
+            <DashboardSection title="Upcoming" subtitle="Within 30 days" items={upcoming} startIndex={nextUp.length} onItemClick={goToItem} accent="medium" onMarkHandled={markHandled} onSnooze={snoozeItem} />
           )}
           {onWatch.length > 0 && (
-            <DashboardSection title="On Watch" subtitle="30+ days away" items={onWatch} startIndex={nextUp.length + upcoming.length} onItemClick={goToItem} />
+            <DashboardSection title="On Watch" subtitle="30+ days away" items={onWatch} startIndex={nextUp.length + upcoming.length} onItemClick={goToItem} onMarkHandled={markHandled} onSnooze={snoozeItem} />
           )}
         </div>
       )}
 
       {statusTab === "handled" && filteredItems.length > 0 && (
-        <DashboardSection title="Completed" subtitle="Previously handled" items={filteredItems} startIndex={0} onItemClick={goToItem} />
+        <DashboardSection title="Completed" subtitle="Previously handled" items={filteredItems} startIndex={0} onItemClick={goToItem} onReactivate={reactivateItem} />
       )}
 
       {filteredItems.length === 0 && <DashboardEmpty statusTab={statusTab} hasFilters={!!searchQuery || activeFilters > 0} />}

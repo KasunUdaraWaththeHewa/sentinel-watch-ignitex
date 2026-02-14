@@ -10,9 +10,22 @@ interface DashboardSectionProps {
   startIndex: number;
   onItemClick?: (id: string) => void;
   accent?: "high" | "medium" | "default";
+  onMarkHandled?: (id: string) => void;
+  onSnooze?: (id: string) => void;
+  onReactivate?: (id: string) => void;
 }
 
-export function DashboardSection({ title, subtitle, items, startIndex, onItemClick, accent = "default" }: DashboardSectionProps) {
+export function DashboardSection({
+  title,
+  subtitle,
+  items,
+  startIndex,
+  onItemClick,
+  accent = "default",
+  onMarkHandled,
+  onSnooze,
+  onReactivate,
+}: DashboardSectionProps) {
   const dotColor = accent === "high"
     ? "bg-sentinel-severity-high"
     : accent === "medium"
@@ -36,7 +49,15 @@ export function DashboardSection({ title, subtitle, items, startIndex, onItemCli
       </div>
       <div className="space-y-2">
         {items.map((item, i) => (
-          <WatchedItemCard key={item.id} item={item} index={startIndex + i} onClick={() => onItemClick?.(item.id)} />
+          <WatchedItemCard
+            key={item.id}
+            item={item}
+            index={startIndex + i}
+            onClick={() => onItemClick?.(item.id)}
+            onMarkHandled={() => onMarkHandled?.(item.id)}
+            onSnooze={() => onSnooze?.(item.id)}
+            onReactivate={() => onReactivate?.(item.id)}
+          />
         ))}
       </div>
     </motion.section>
