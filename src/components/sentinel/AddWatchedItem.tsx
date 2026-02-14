@@ -13,13 +13,17 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import {
   Severity,
   Schedule,
   CustomIntervalUnit,
   CustomScheduleMode,
+  RegretRisk,
+  ItemStatus,
   type Reminder,
+  type WatchedItem,
 } from "@/types/sentinel";
 import {
   DEFAULT_CATEGORIES,
@@ -34,15 +38,20 @@ import {
 import { SeverityBadge } from "./SeverityBadge";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
+import { useWatchedItems } from "@/context/WatchedItemsContext";
+import { useToast } from "@/hooks/use-toast";
 
 export function AddWatchedItem() {
   const navigate = useNavigate();
+  const { addItem } = useWatchedItems();
+  const { toast } = useToast();
   const [step, setStep] = useState(0);
   const [title, setTitle] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [schedule, setSchedule] = useState<Schedule>(Schedule.Yearly);
   const [date, setDate] = useState("");
   const [severity, setSeverity] = useState<Severity>(Severity.Medium);
+  const [notes, setNotes] = useState("");
   const [done, setDone] = useState(false);
 
   // Custom schedule state
@@ -119,6 +128,58 @@ export function AddWatchedItem() {
 
   const updateReminderDays = (index: number, days: number) => {
     setReminders(reminders.map((r, i) => (i === index ? { ...r, days } : r)));
+  };
+
+  const getRegretRisk = (nextSeverity: Severity) => {
+    if (nextSeverity === Severity.High) return RegretRisk.High;
+    if (nextSeverity === Severity.Medium) return RegretRisk.Medium;
+    return RegretRisk.Low;
+  };
+
+  const getActionWindow = (nextSeverity: Severity) => {
+    if (nextSeverity === Severity.High) return "Best action window: 2–4 weeks before";
+    if (nextSeverity === Severity.Medium)
+      return "Best action window: 1–2 weeks before";
+    return "Best action window: 5–10 days before";
+  };
+
+  const handleCreateItem = () => {
+    if (!selectedCategory) return;
+
+    const baseDate = date ? new Date(`${date}T09:00:00`) : new Date();
+    const watchedItem: WatchedItem = {
+      id:
+        typeof crypto !== "undefined" && crypto.randomUUID
+          ? crypto.randomUUID()
+          : `${Date.now()}`,
+      title: title.trim(),
+      category: selectedCategory,
+      severity,
+      nextDate: baseDate,
+      schedule,
+      regretRisk: getRegretRisk(severity),
+      actionWindow: getActionWindow(severity),
+      status: ItemStatus.Active,
+      createdAt: new Date(),
+      notes: notes.trim() || undefined,
+      reminders,
+      customInterval:
+        schedule === Schedule.Custom &&
+        customMode === CustomScheduleMode.Interval
+          ? { value: customIntervalValue, unit: customIntervalUnit }
+          : undefined,
+      customDates:
+        schedule === Schedule.Custom && customMode === CustomScheduleMode.Dates
+          ? customDates
+          : undefined,
+    };
+
+    addItem(watchedItem);
+    toast({
+      title: "Item added",
+      description: "Sentinel is now tracking this deadline.",
+    });
+    setDone(true);
   };
 
   if (done) {
@@ -578,6 +639,16 @@ export function AddWatchedItem() {
                   </p>
                 </div>
               )}
+
+              <div className="space-y-2">
+                <label className="text-sm text-muted-foreground">Notes (optional)</label>
+                <Textarea
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="Add context, account details, or anything your future self should know."
+                  className="glass-surface border-sentinel-border bg-transparent text-foreground min-h-24"
+                />
+              </div>
             </>
           )}
         </motion.div>
@@ -598,7 +669,7 @@ export function AddWatchedItem() {
         ) : (
           <Button
             variant="glass-primary"
-            onClick={() => setDone(true)}
+            onClick={handleCreateItem}
             className="gap-2"
           >
             <Check className="h-4 w-4" />

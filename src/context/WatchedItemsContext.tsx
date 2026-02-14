@@ -4,8 +4,16 @@ import { ItemStatus, type WatchedItem } from "@/types/sentinel";
 
 const STORAGE_KEY = "sentinel.watched-items.v1";
 
+type SerializedWatchedItem = Omit<WatchedItem, "nextDate" | "createdAt"> & {
+  nextDate: string;
+  createdAt: string;
+};
+
 interface WatchedItemsContextValue {
   items: WatchedItem[];
+  addItem: (item: WatchedItem) => void;
+  removeItem: (id: string) => void;
+  replaceAllItems: (items: WatchedItem[]) => void;
   markHandled: (id: string) => void;
   snoozeItem: (id: string) => void;
   reactivateItem: (id: string) => void;
@@ -16,12 +24,7 @@ const WatchedItemsContext = createContext<WatchedItemsContextValue | undefined>(
 );
 
 const reviveItems = (serialized: string): WatchedItem[] => {
-  const parsed = JSON.parse(serialized) as Array<
-    Omit<WatchedItem, "nextDate" | "createdAt"> & {
-      nextDate: string;
-      createdAt: string;
-    }
-  >;
+  const parsed = JSON.parse(serialized) as SerializedWatchedItem[];
 
   return parsed.map((item) => ({
     ...item,
@@ -32,6 +35,14 @@ const reviveItems = (serialized: string): WatchedItem[] => {
 
 const sortByDateAsc = (items: WatchedItem[]) =>
   [...items].sort((a, b) => a.nextDate.getTime() - b.nextDate.getTime());
+
+export function serializeWatchedItems(items: WatchedItem[]) {
+  return JSON.stringify(items);
+}
+
+export function parseWatchedItems(serialized: string): WatchedItem[] {
+  return sortByDateAsc(reviveItems(serialized));
+}
 
 export function WatchedItemsProvider({
   children,
@@ -49,7 +60,7 @@ export function WatchedItemsProvider({
     if (!stored) return;
 
     try {
-      setItems(sortByDateAsc(reviveItems(stored)));
+      setItems(parseWatchedItems(stored));
     } catch {
       window.localStorage.removeItem(STORAGE_KEY);
     }
@@ -57,7 +68,7 @@ export function WatchedItemsProvider({
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    window.localStorage.setItem(STORAGE_KEY, serializeWatchedItems(items));
   }, [items]);
 
   const updateStatus = (id: string, status: ItemStatus) => {
@@ -69,6 +80,12 @@ export function WatchedItemsProvider({
   const value = useMemo<WatchedItemsContextValue>(
     () => ({
       items,
+      addItem: (item: WatchedItem) =>
+        setItems((current) => sortByDateAsc([item, ...current])),
+      removeItem: (id: string) =>
+        setItems((current) => current.filter((item) => item.id !== id)),
+      replaceAllItems: (nextItems: WatchedItem[]) =>
+        setItems(sortByDateAsc(nextItems)),
       markHandled: (id: string) => updateStatus(id, ItemStatus.Handled),
       snoozeItem: (id: string) => updateStatus(id, ItemStatus.Snoozed),
       reactivateItem: (id: string) => updateStatus(id, ItemStatus.Active),
